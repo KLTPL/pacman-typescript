@@ -9,7 +9,7 @@ const RADII = {
 const COLORS = {
   WALL: "blue",
   COIN: "white",
-  PACMAN: "yellow",
+  PACMAN: "RED",
 } as const;
 
 class View {
