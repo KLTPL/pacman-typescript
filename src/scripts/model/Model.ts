@@ -1,18 +1,14 @@
-import { Dir } from "../../lib/Dir";
+import type { Dir } from "../../lib/Dir";
 import type { Pos } from "../../lib/Pos";
+import Pacman from "./Pacman";
 
 export type CoinValue = "NO_COIN" | "COIN" | "SUPER_COIN";
-
-const PACMAN_SPEED = 0.1;
 
 class Model {
   private _wallData: boolean[][]; // true - there is a wall, false - there is no wall
   private _coinData: CoinValue[][];
-  private _pacman: {
-    pos: Pos;
-    dir: Dir;
-    selectedDir: Dir;
-  };
+  private _pacman;
+  public pacman;
   constructor(
     inputWallData: number[][],
     inputCoinData: number[][],
@@ -21,16 +17,13 @@ class Model {
   ) {
     this._wallData = this.convertInputWallData(inputWallData);
     this._coinData = this.convertInputCoinData(inputCoinData, superCoinsPos);
-    this._pacman = {
-      pos: pacmanPos,
-      dir: new Dir(1, 0),
-      selectedDir: new Dir(1, 0),
+    this._pacman = new Pacman(pacmanPos);
+    this.pacman = {
+      move: () => this._pacman.move(this._wallData),
+      getPos: () => this._pacman.getPosition(),
+      setSelectedDir: (selectedDir: Dir) =>
+        this._pacman.setSelectedDir(selectedDir),
     };
-  }
-
-  public movePacman() {
-    this._pacman.pos.x += this._pacman.dir.x * PACMAN_SPEED;
-    this._pacman.pos.y += this._pacman.dir.y * PACMAN_SPEED;
   }
 
   public getWallData() {
@@ -39,17 +32,6 @@ class Model {
 
   public getCoinData() {
     return this._coinData;
-  }
-
-  public getPacmanData() {
-    return this._pacman;
-  }
-
-  public setPacmanDir(dir: Dir) {
-    if (dir.isOppositeTo(this._pacman.dir)) {
-      this._pacman.dir.x = dir.x;
-      this._pacman.dir.y = dir.y;
-    }
   }
 
   private convertInputWallData(inputWallData: number[][]) {

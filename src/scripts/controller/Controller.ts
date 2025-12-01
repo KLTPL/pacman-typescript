@@ -1,11 +1,11 @@
 import { Dir } from "../../lib/Dir";
-import type { Pos } from "../../lib/Pos";
+import { Pos } from "../../lib/Pos";
 import wait from "../../lib/wait";
 import Model from "../model/Model";
 import View from "../view/View";
 
 const ROWS_AMOUNT = 28;
-const GAME_LOOP_TIME_MS = 100;
+const GAME_LOOP_TIME_MS = 20;
 
 class Controller {
   private _model = new Model(
@@ -22,13 +22,12 @@ class Controller {
 
   async gameLoop() {
     while (true) {
-      this._model.movePacman();
+      this._model.pacman.move();
       this._view.drawBoard(
         this._model.getWallData(),
         this._model.getCoinData(),
-        this._model.getPacmanData().pos
+        this._model.pacman.getPos()
       );
-      console.log("wait");
       await wait(GAME_LOOP_TIME_MS);
     }
   }
@@ -38,13 +37,13 @@ class Controller {
       const key = ev.key.toLocaleLowerCase();
 
       if (key === "w" || key === "arrowup") {
-        this._model.setPacmanDir(new Dir(0, -1));
+        this._model.pacman.setSelectedDir(new Dir(0, -1));
       } else if (key === "s" || key === "arrowdown") {
-        this._model.setPacmanDir(new Dir(0, 1));
+        this._model.pacman.setSelectedDir(new Dir(0, 1));
       } else if (key === "a" || key === "arrowleft") {
-        this._model.setPacmanDir(new Dir(-1, 0));
+        this._model.pacman.setSelectedDir(new Dir(-1, 0));
       } else if (key === "d" || key === "arrowright") {
-        this._model.setPacmanDir(new Dir(1, 0));
+        this._model.pacman.setSelectedDir(new Dir(1, 0));
       }
     });
   }
@@ -123,19 +122,11 @@ class Controller {
     ];
   }
   private static getSuperCoinsPos(): Pos[] {
-    return [
-      { y: 2, x: 1 },
-      { y: 2, x: 26 },
-      { y: 27, x: 1 },
-      { y: 27, x: 26 },
-    ];
+    return [new Pos(1, 2), new Pos(26, 2), new Pos(1, 27), new Pos(26, 27)];
   }
 
   private static getInputPacmanPos(): Pos {
-    return {
-      x: 13.5,
-      y: 23,
-    };
+    return new Pos(14, 23.5);
   }
 }
 

@@ -9,7 +9,7 @@ const RADII = {
 const COLORS = {
   WALL: "blue",
   COIN: "white",
-  PACMAN: "RED",
+  PACMAN: "yellow",
 } as const;
 
 class View {
@@ -52,16 +52,15 @@ class View {
       for (let c = 0; c < coinData[r].length; c++) {
         const coinVal = coinData[r][c];
         if (coinVal === "COIN") {
-          this.drawCircle(c, r, RADII.COIN, COLORS.COIN);
+          this.drawCircle(c + 0.5, r + 0.5, RADII.COIN, COLORS.COIN);
         } else if (coinVal === "SUPER_COIN") {
-          this.drawCircle(c, r, RADII.SUPER_COIN, COLORS.COIN);
+          this.drawCircle(c + 0.5, r + 0.5, RADII.SUPER_COIN, COLORS.COIN);
         }
       }
     }
   }
 
   private drawPacman(pacmanPos: Pos) {
-    console.log(pacmanPos);
     this.drawCircle(pacmanPos.x, pacmanPos.y, 0.5, COLORS.PACMAN);
   }
 
@@ -79,8 +78,8 @@ class View {
     this._ctx.fillStyle = color;
     this._ctx.beginPath();
     this._ctx.arc(
-      x * this._fieldSizePx + 0.5 * this._fieldSizePx,
-      y * this._fieldSizePx + 0.5 * this._fieldSizePx,
+      x * this._fieldSizePx,
+      y * this._fieldSizePx,
       radius * this._fieldSizePx,
       0,
       2 * Math.PI
