@@ -23,6 +23,7 @@ class Controller {
   async gameLoop() {
     while (true) {
       this._model.pacman.move();
+      this._model.pacman.collectCoin();
       this._view.drawBoard(
         this._model.getWallData(),
         this._model.getCoinData(),
