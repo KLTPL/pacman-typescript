@@ -1,70 +1,85 @@
 import type { Pos } from "../../lib/Pos";
 import type { CoinValue } from "../model/Model";
+import Board from "./Board";
 
-const RADII = {
-  COIN: 0.1,
-  SUPER_COIN: 0.3,
-} as const;
-
-const COLORS = {
+export const COLORS = {
   WALL: "blue",
   COIN: "white",
   PACMAN: "yellow",
 } as const;
 
+export type DrawRectArgs = {
+  x: number;
+  y: number;
+  color: string;
+};
+export type DrawCircleArgs = {
+  x: number;
+  y: number;
+  radius: number;
+  color: string;
+};
+
 class View {
   private _canvas: HTMLCanvasElement;
   private _ctx: CanvasRenderingContext2D;
   private _widthPx: number;
-  private _heightPx: number;
+  private _heightPx: number; // top bar + board + bottom bar
   private _fieldSizePx: number;
-  constructor(fieldsX: number) {
+  private _topBarSize: number;
+  private _bottomBarSize: number;
+  private _board;
+
+  constructor(rowsSize: number, topBarSize: number, bottomBarSize: number) {
     this._canvas = document.getElementById("game") as HTMLCanvasElement;
     this._ctx = this._canvas.getContext("2d")!;
     this._widthPx = this._canvas.width;
     this._heightPx = this._canvas.height;
-    this._fieldSizePx = this._widthPx / fieldsX;
+    this._fieldSizePx = this._widthPx / rowsSize;
+    this._topBarSize = topBarSize;
+    this._bottomBarSize = bottomBarSize;
+    this._board = new Board(
+      args =>
+        this.drawRect({
+          ...args,
+          y: args.y + this._topBarSize,
+        }),
+      args => this.drawCircle({ ...args, y: args.y + this._topBarSize }),
+      () =>
+        this._ctx.clearRect(
+          0,
+          this._topBarSize * this._fieldSizePx,
+          this._widthPx,
+          this._heightPx -
+            (this._bottomBarSize + this._topBarSize) * this._fieldSizePx
+        )
+    );
   }
 
-  public drawBoard(
+  public draw(
     wallData: boolean[][],
     coinData: CoinValue[][],
-    pacmanPos: Pos
+    pacmanPos: Pos,
+    score: number
   ) {
-    this.clearCanvas();
-    this.drawWalls(wallData);
-    this.drawCoins(coinData);
-    this.drawPacman(pacmanPos);
+    this._ctx.clearRect(0, 0, this._widthPx, this._heightPx);
+    this.drawScore(score);
+    this._board.drawBoard(wallData, coinData, pacmanPos);
   }
 
-  private drawWalls(wallData: boolean[][]) {
-    for (let r = 0; r < wallData.length; r++) {
-      for (let c = 0; c < wallData[r].length; c++) {
-        if (wallData[r][c]) {
-          this.drawRect(c, r, COLORS.WALL);
-        }
-      }
-    }
+  private drawScore(score: number) {
+    this._ctx.fillStyle = "white";
+    this._ctx.font = "100px Arial";
+    this._ctx.textAlign = "center";
+    this._ctx.textBaseline = "middle";
+    this._ctx.fillText(
+      score.toString(),
+      this._widthPx / 2,
+      (this._topBarSize * this._fieldSizePx) / 2
+    );
   }
 
-  private drawCoins(coinData: CoinValue[][]) {
-    for (let r = 0; r < coinData.length; r++) {
-      for (let c = 0; c < coinData[r].length; c++) {
-        const coinVal = coinData[r][c];
-        if (coinVal === "COIN") {
-          this.drawCircle(c + 0.5, r + 0.5, RADII.COIN, COLORS.COIN);
-        } else if (coinVal === "SUPER_COIN") {
-          this.drawCircle(c + 0.5, r + 0.5, RADII.SUPER_COIN, COLORS.COIN);
-        }
-      }
-    }
-  }
-
-  private drawPacman(pacmanPos: Pos) {
-    this.drawCircle(pacmanPos.x, pacmanPos.y, 0.5, COLORS.PACMAN);
-  }
-
-  private drawRect(x: number, y: number, color: string) {
+  private drawRect({ color, x, y }: DrawRectArgs) {
     this._ctx.fillStyle = color;
     this._ctx.fillRect(
       x * this._fieldSizePx,
@@ -74,7 +89,7 @@ class View {
     );
   }
 
-  private drawCircle(x: number, y: number, radius: number, color: string) {
+  private drawCircle({ x, y, color, radius }: DrawCircleArgs): void {
     this._ctx.fillStyle = color;
     this._ctx.beginPath();
     this._ctx.arc(
@@ -85,10 +100,6 @@ class View {
       2 * Math.PI
     );
     this._ctx.fill();
-  }
-
-  private clearCanvas() {
-    this._ctx.clearRect(0, 0, this._widthPx, this._heightPx);
   }
 }
 

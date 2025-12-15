@@ -4,7 +4,10 @@ import wait from "../../lib/wait";
 import Model from "../model/Model";
 import View from "../view/View";
 
-const ROWS_AMOUNT = 28;
+// const COLS_SIZE = 31; // amount of colums
+const ROWS_SIZE = 28; // amount of rows
+const TOP_BAR_SIZE = 2;
+const BOTTOM_BAR_SIZE = 2;
 const GAME_LOOP_TIME_MS = 20;
 
 class Controller {
@@ -14,7 +17,7 @@ class Controller {
     Controller.getSuperCoinsPos(),
     Controller.getInputPacmanPos()
   );
-  private _view = new View(ROWS_AMOUNT);
+  private _view = new View(ROWS_SIZE, TOP_BAR_SIZE, BOTTOM_BAR_SIZE);
   constructor() {
     this.gameLoop();
     this.initEventListeners();
@@ -24,10 +27,11 @@ class Controller {
     while (true) {
       this._model.pacman.move();
       this._model.pacman.collectCoin();
-      this._view.drawBoard(
+      this._view.draw(
         this._model.getWallData(),
         this._model.getCoinData(),
-        this._model.pacman.getPos()
+        this._model.pacman.getPos(),
+        this._model.getScore()
       );
       await wait(GAME_LOOP_TIME_MS);
     }

@@ -53,14 +53,6 @@ class Model {
     }
   }
 
-  public getWallData() {
-    return this._wallData;
-  }
-
-  public getCoinData() {
-    return this._coinData;
-  }
-
   private convertInputWallData(inputWallData: number[][]) {
     const wallData: boolean[][] = [];
 
@@ -103,6 +95,18 @@ class Model {
     }
 
     return { coinData, coinAmount };
+  }
+
+  public getWallData() {
+    return this._wallData;
+  }
+
+  public getCoinData() {
+    return this._coinData;
+  }
+
+  public getScore() {
+    return this._score;
   }
 }
 
