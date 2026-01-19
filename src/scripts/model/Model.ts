@@ -1,14 +1,19 @@
 import type { Dir } from "../../lib/Dir";
 import type { Pos } from "../../lib/Pos";
+import type { Prettify } from "../../lib/Prettify";
+import type { InputPortalPos } from "../controller/Controller";
 import Pacman from "./Pacman";
 
 export type CoinValue = "NO_COIN" | "COIN" | "SUPER_COIN";
 
 const COIN_VALUE = 10;
 
+export type PortalData = Prettify<InputPortalPos>;
+
 class Model {
   private _wallData: boolean[][]; // true - there is a wall, false - there is no wall
   private _coinData: CoinValue[][];
+  private _portalData: PortalData;
   private _pacman;
   public pacman;
   private _coinsOnBoard: number;
@@ -17,8 +22,10 @@ class Model {
     inputWallData: number[][],
     inputCoinData: number[][],
     superCoinsPos: Pos[],
-    pacmanPos: Pos
+    pacmanPos: Pos,
+    inputPortalPos: InputPortalPos
   ) {
+    this._portalData = inputPortalPos;
     this._wallData = this.convertInputWallData(inputWallData);
     const { coinAmount, coinData } = this.convertInputCoinData(
       inputCoinData,
@@ -29,7 +36,7 @@ class Model {
     this._pacman = new Pacman(pacmanPos);
     this.pacman = {
       collectCoin: () => this.pacmanCollectCoin(),
-      move: () => this._pacman.move(this._wallData),
+      move: () => this._pacman.move(this._wallData, this._portalData),
       getPos: () => this._pacman.getPosition(),
       setSelectedDir: (selectedDir: Dir) =>
         this._pacman.setSelectedDir(selectedDir),

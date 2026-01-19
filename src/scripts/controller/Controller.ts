@@ -10,12 +10,18 @@ const TOP_BAR_SIZE = 2;
 const BOTTOM_BAR_SIZE = 2;
 const GAME_LOOP_TIME_MS = 20;
 
+export type InputPortalPos = {
+  start: Pos;
+  end: Pos;
+}[];
+
 class Controller {
   private _model = new Model(
     Controller.getInputWallData(),
     Controller.getInputCoinData(),
     Controller.getSuperCoinsPos(),
-    Controller.getInputPacmanPos()
+    Controller.getInputPacmanPos(),
+    Controller.getInputPortalPos(),
   );
   private _view = new View(ROWS_SIZE, TOP_BAR_SIZE, BOTTOM_BAR_SIZE);
   constructor() {
@@ -31,7 +37,7 @@ class Controller {
         this._model.getWallData(),
         this._model.getCoinData(),
         this._model.pacman.getPos(),
-        this._model.getScore()
+        this._model.getScore(),
       );
       await wait(GAME_LOOP_TIME_MS);
     }
@@ -132,6 +138,23 @@ class Controller {
 
   private static getInputPacmanPos(): Pos {
     return new Pos(14, 23.5);
+  }
+
+  private static getInputPortalPos(): InputPortalPos {
+    const temp = (start: Pos, end: Pos) => {
+      return { start, end };
+    };
+    return [
+      temp(new Pos(-1, 8), new Pos(28, 8)),
+      temp(new Pos(28, 8), new Pos(-1, 8)),
+      temp(new Pos(-1, 17), new Pos(28, 17)),
+      temp(new Pos(28, 17), new Pos(-1, 17)),
+      // Saved for later tests
+      // temp(new Pos(3, 11), new Pos(24, 11)),
+      // temp(new Pos(24, 11), new Pos(3, 11)),
+      // temp(new Pos(16, 23), new Pos(12, 23)),
+      // temp(new Pos(12, 23), new Pos(16, 23)),
+    ];
   }
 }
 

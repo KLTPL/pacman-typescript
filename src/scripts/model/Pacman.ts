@@ -1,5 +1,6 @@
 import { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
+import type { PortalData } from "./Model";
 
 const PACMAN_SPEED = 0.1;
 
@@ -7,11 +8,16 @@ export default class Pacman {
   private _pos: Pos;
   private _dir = new Dir(1, 0);
   private _selectedDir = new Dir(1, 0);
+  private _isSelectedDirEnabled = true; // swithced to false for one move after teleporting
   constructor(pos: Pos) {
     this._pos = pos;
   }
 
-  private isWallInFront(wallData: boolean[][], dir: Dir = this._dir) {
+  private isWallInFront(
+    wallData: boolean[][],
+    portalData: PortalData,
+    dir: Dir = this._dir,
+  ) {
     const isInCenter = this._pos.isInCenter();
 
     const isPerpendicular =
@@ -26,29 +32,58 @@ export default class Pacman {
       throw new Error("Pacman pos not in center");
     }
     const wallPos = Pos.addDirToPos(fieldPosArr[0], dir);
+
+    // check if there's a portal
+    for (const { start } of portalData) {
+      if (start.isEqualTo(wallPos)) {
+        return false;
+      }
+    }
+
+    // check if out of bounds
     if (
       wallData[wallPos.y] === undefined ||
       wallData[wallPos.y][wallPos.x] === undefined
     ) {
-      throw new Error("Position out of bounds");
+      return true;
     }
     const isWall = wallData[wallPos.y][wallPos.x];
 
     return isWall;
   }
 
-  public move(wallData: boolean[][]) {
-    if (this._dir.isOppositeTo(this._selectedDir)) {
-      this.setDir(this._selectedDir);
-    } else if (!this._dir.isEqualTo(this._selectedDir)) {
-      // directions are perpendicular
-      if (!this.isWallInFront(wallData, this._selectedDir)) {
+  public move(wallData: boolean[][], portalData: PortalData) {
+    if (this._isSelectedDirEnabled) {
+      // change this._dir to this._selected direction if possible
+      if (this._dir.isOppositeTo(this._selectedDir)) {
         this.setDir(this._selectedDir);
+      } else if (!this._dir.isEqualTo(this._selectedDir)) {
+        // directions are perpendicular
+        if (!this.isWallInFront(wallData, portalData, this._selectedDir)) {
+          this.setDir(this._selectedDir);
+        }
       }
+    } else {
+      this._isSelectedDirEnabled = true;
     }
 
-    if (!this._pos.isInCenter() || !this.isWallInFront(wallData)) {
+    // move in direction = this._dir
+    if (!this._pos.isInCenter() || !this.isWallInFront(wallData, portalData)) {
       this._pos = Pos.addDirToPos(this._pos, this._dir, PACMAN_SPEED);
+    }
+
+    for (let i = 0; i < portalData.length; i++) {
+      const { start, end } = portalData[i];
+
+      if (
+        this._pos.isInCenter() &&
+        start.isEqualTo(this._pos.calcFieldPos()[0]) // if in center calcFieldPos returns one el list
+      ) {
+        this._pos.x = end.x + 0.5;
+        this._pos.y = end.y + 0.5;
+        this._isSelectedDirEnabled = false;
+        break;
+      }
     }
   }
 

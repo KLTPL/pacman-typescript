@@ -8,6 +8,10 @@ export class Pos {
     this.y = y;
   }
 
+  public isEqualTo(pos: Pos) {
+    return this.x === pos.x && this.y === pos.y;
+  }
+
   isInCenter(): boolean {
     const isXPointFive = (x: number) =>
       Number((x - 0.5).toFixed(3)) === Math.floor(x);
