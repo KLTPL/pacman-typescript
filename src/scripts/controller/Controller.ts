@@ -37,6 +37,7 @@ class Controller {
         this._model.getWallData(),
         this._model.getCoinData(),
         this._model.pacman.getPos(),
+        this._model.pacman.findSecondPacmanPos(),
         this._model.getScore(),
       );
       await wait(GAME_LOOP_TIME_MS);

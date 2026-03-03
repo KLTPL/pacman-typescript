@@ -12,6 +12,17 @@ export class Pos {
     return this.x === pos.x && this.y === pos.y;
   }
 
+  public calcDistanceInLineToPos(
+    pos: Pos,
+  ): { dist: number; axis: "x" | "y" } | null {
+    if (this.x === pos.x) {
+      return { dist: Math.abs(this.y - pos.y), axis: "y" };
+    } else if (this.y === pos.y) {
+      return { dist: Math.abs(this.x - pos.x), axis: "x" };
+    }
+    return null;
+  }
+
   isInCenter(): boolean {
     const isXPointFive = (x: number) =>
       Number((x - 0.5).toFixed(3)) === Math.floor(x);
@@ -40,7 +51,7 @@ export class Pos {
   public static addDirToPos(pos: Pos, dir: Dir, dirMultiplier: number = 1) {
     return new Pos(
       Number((pos.x + dir.x * dirMultiplier).toFixed(3)),
-      Number((pos.y + dir.y * dirMultiplier).toFixed(3))
+      Number((pos.y + dir.y * dirMultiplier).toFixed(3)),
     );
   }
 }

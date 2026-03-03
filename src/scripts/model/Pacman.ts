@@ -79,12 +79,42 @@ export default class Pacman {
         this._pos.isInCenter() &&
         start.isEqualTo(this._pos.calcFieldPos()[0]) // if in center calcFieldPos returns one el list
       ) {
-        this._pos.x = end.x + 0.5;
-        this._pos.y = end.y + 0.5;
+        this._pos.x = end.x + 0.5 + this._dir.x;
+        this._pos.y = end.y + 0.5 + this._dir.y;
         this._isSelectedDirEnabled = false;
         break;
       }
     }
+  }
+
+  public findSecondPacmanPos(portalData: PortalData): Pos | null {
+    let secondPacmanPos: Pos | null = null;
+    for (let i = 0; i < portalData.length; i++) {
+      const { start, end } = portalData[i];
+
+      const distObj = new Pos(
+        start.x + 0.5,
+        start.y + 0.5,
+      ).calcDistanceInLineToPos(this._pos);
+
+      if (distObj !== null && distObj.dist !== 0 && distObj.dist < 1) {
+        if (distObj.axis === "x") {
+          const dir = start.x + 0.5 - this._pos.x > 0 ? 1 : -1;
+          secondPacmanPos = new Pos(
+            end.x + (1 - distObj.dist) * dir + 0.5,
+            end.y + 0.5,
+          );
+        } else {
+          const dir = start.y + 0.5 - this._pos.y > 0 ? 1 : -1;
+          secondPacmanPos = new Pos(
+            end.x + 0.5,
+            end.y + (1 - distObj.dist) * dir + 0.5,
+          );
+        }
+        break;
+      }
+    }
+    return secondPacmanPos;
   }
 
   public setSelectedDir(selectedDir: Dir) {

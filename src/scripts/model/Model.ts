@@ -23,13 +23,13 @@ class Model {
     inputCoinData: number[][],
     superCoinsPos: Pos[],
     pacmanPos: Pos,
-    inputPortalPos: InputPortalPos
+    inputPortalPos: InputPortalPos,
   ) {
     this._portalData = inputPortalPos;
     this._wallData = this.convertInputWallData(inputWallData);
     const { coinAmount, coinData } = this.convertInputCoinData(
       inputCoinData,
-      superCoinsPos
+      superCoinsPos,
     );
     this._coinData = coinData;
     this._coinsOnBoard = coinAmount;
@@ -40,6 +40,8 @@ class Model {
       getPos: () => this._pacman.getPosition(),
       setSelectedDir: (selectedDir: Dir) =>
         this._pacman.setSelectedDir(selectedDir),
+      findSecondPacmanPos: () =>
+        this._pacman.findSecondPacmanPos(this._portalData),
     };
   }
 
@@ -78,7 +80,7 @@ class Model {
 
   private convertInputCoinData(
     inputCoinData: number[][],
-    superCoinsPos: Pos[]
+    superCoinsPos: Pos[],
   ) {
     const coinData: CoinValue[][] = [];
     let coinAmount = 0;
@@ -110,6 +112,10 @@ class Model {
 
   public getCoinData() {
     return this._coinData;
+  }
+
+  public getPortalData() {
+    return this._portalData;
   }
 
   public getScore() {

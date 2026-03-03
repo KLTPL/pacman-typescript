@@ -1,4 +1,4 @@
-import type { Pos } from "../../lib/Pos";
+import { Pos } from "../../lib/Pos";
 import type { CoinValue } from "../model/Model";
 import { COLORS, type DrawCircleArgs, type DrawRectArgs } from "./View";
 
@@ -17,7 +17,7 @@ class Board {
   constructor(
     drawRect: DrawRectFun,
     drawCircle: DrawCirlceFun,
-    clear: () => void
+    clear: () => void,
   ) {
     this._drawRect = drawRect;
     this._drawCircle = drawCircle;
@@ -27,12 +27,13 @@ class Board {
   public drawBoard(
     wallData: boolean[][],
     coinData: CoinValue[][],
-    pacmanPos: Pos
+    pacmanPos: Pos,
+    secondPacmanPos: Pos | null,
   ) {
     this._clear();
     this.drawWalls(wallData);
+    this.drawPacman(pacmanPos, secondPacmanPos);
     this.drawCoins(coinData);
-    this.drawPacman(pacmanPos);
   }
 
   private drawWalls(wallData: boolean[][]) {
@@ -68,13 +69,21 @@ class Board {
     }
   }
 
-  private drawPacman(pacmanPos: Pos) {
+  private drawPacman(pacmanPos: Pos, secondPacmanPos: Pos | null) {
     this._drawCircle({
       x: pacmanPos.x,
       y: pacmanPos.y,
       radius: 0.5,
       color: COLORS.PACMAN,
     });
+    if (secondPacmanPos !== null) {
+      this._drawCircle({
+        x: secondPacmanPos.x,
+        y: secondPacmanPos.y,
+        radius: 0.5,
+        color: COLORS.PACMAN,
+      });
+    }
   }
 }
 

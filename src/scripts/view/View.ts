@@ -51,8 +51,8 @@ class View {
           this._topBarSize * this._fieldSizePx,
           this._widthPx,
           this._heightPx -
-            (this._bottomBarSize + this._topBarSize) * this._fieldSizePx
-        )
+            (this._bottomBarSize + this._topBarSize) * this._fieldSizePx,
+        ),
     );
   }
 
@@ -60,11 +60,12 @@ class View {
     wallData: boolean[][],
     coinData: CoinValue[][],
     pacmanPos: Pos,
-    score: number
+    secondPacmanPos: Pos | null,
+    score: number,
   ) {
     this._ctx.clearRect(0, 0, this._widthPx, this._heightPx);
     this.drawScore(score);
-    this._board.drawBoard(wallData, coinData, pacmanPos);
+    this._board.drawBoard(wallData, coinData, pacmanPos, secondPacmanPos);
   }
 
   private drawScore(score: number) {
@@ -75,7 +76,7 @@ class View {
     this._ctx.fillText(
       score.toString(),
       this._widthPx / 2,
-      (this._topBarSize * this._fieldSizePx) / 2
+      (this._topBarSize * this._fieldSizePx) / 2,
     );
   }
 
@@ -85,7 +86,7 @@ class View {
       x * this._fieldSizePx,
       y * this._fieldSizePx,
       this._fieldSizePx,
-      this._fieldSizePx
+      this._fieldSizePx,
     );
   }
 
@@ -97,7 +98,7 @@ class View {
       y * this._fieldSizePx,
       radius * this._fieldSizePx,
       0,
-      2 * Math.PI
+      2 * Math.PI,
     );
     this._ctx.fill();
   }
