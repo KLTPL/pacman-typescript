@@ -28,11 +28,13 @@ class Board {
     wallData: boolean[][],
     coinData: CoinValue[][],
     pacmanPos: Pos,
+    ghosts: Pos[],
     secondPacmanPos: Pos | null,
   ) {
     this._clear();
     this.drawWalls(wallData);
     this.drawPacman(pacmanPos, secondPacmanPos);
+    this.drawGhosts(ghosts);
     this.drawCoins(coinData);
   }
 
@@ -82,6 +84,17 @@ class Board {
         y: secondPacmanPos.y,
         radius: 0.5,
         color: COLORS.PACMAN,
+      });
+    }
+  }
+
+  private drawGhosts(ghosts: Pos[]) {
+    for (const ghost of ghosts) {
+      this._drawCircle({
+        x: ghost.x,
+        y: ghost.y,
+        radius: 0.5,
+        color: "purple",
       });
     }
   }

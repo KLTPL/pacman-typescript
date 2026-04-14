@@ -1,8 +1,7 @@
 import { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
 import type { PortalData } from "./Model";
-
-const PACMAN_SPEED = 0.1;
+import { PACMAN_SPEED } from "../../lib/constants";
 
 export default class Pacman {
   private _pos: Pos;

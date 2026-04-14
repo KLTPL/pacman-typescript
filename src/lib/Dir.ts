@@ -13,4 +13,8 @@ export class Dir {
   public isOppositeTo(dir: Dir) {
     return (this.x === dir.x || this.y === dir.y) && !this.isEqualTo(dir);
   }
+
+  public static isValidArg(num: number) {
+    return num === -1 || num === 0 || num === 1;
+  }
 }

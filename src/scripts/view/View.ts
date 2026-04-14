@@ -61,11 +61,18 @@ class View {
     coinData: CoinValue[][],
     pacmanPos: Pos,
     secondPacmanPos: Pos | null,
+    ghosts: Pos[],
     score: number,
   ) {
     this._ctx.clearRect(0, 0, this._widthPx, this._heightPx);
     this.drawScore(score);
-    this._board.drawBoard(wallData, coinData, pacmanPos, secondPacmanPos);
+    this._board.drawBoard(
+      wallData,
+      coinData,
+      pacmanPos,
+      ghosts,
+      secondPacmanPos,
+    );
   }
 
   private drawScore(score: number) {

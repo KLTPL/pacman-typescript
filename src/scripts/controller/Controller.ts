@@ -32,12 +32,14 @@ class Controller {
   async gameLoop() {
     while (true) {
       this._model.pacman.move();
+      this._model.ghosts.move();
       this._model.pacman.collectCoin();
       this._view.draw(
         this._model.getWallData(),
         this._model.getCoinData(),
         this._model.pacman.getPos(),
         this._model.pacman.findSecondPacmanPos(),
+        this._model.ghosts.getPos(),
         this._model.getScore(),
       );
       await wait(GAME_LOOP_TIME_MS);
@@ -45,7 +47,7 @@ class Controller {
   }
 
   private initEventListeners() {
-    document.addEventListener("keydown", ev => {
+    document.addEventListener("keydown", (ev) => {
       const key = ev.key.toLocaleLowerCase();
 
       if (key === "w" || key === "arrowup") {

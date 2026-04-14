@@ -1,7 +1,8 @@
 import type { Dir } from "../../lib/Dir";
-import type { Pos } from "../../lib/Pos";
+import { Pos } from "../../lib/Pos";
 import type { Prettify } from "../../lib/Prettify";
 import type { InputPortalPos } from "../controller/Controller";
+import Ghosts from "./Ghosts";
 import Pacman from "./Pacman";
 
 export type CoinValue = "NO_COIN" | "COIN" | "SUPER_COIN";
@@ -16,6 +17,8 @@ class Model {
   private _portalData: PortalData;
   private _pacman;
   public pacman;
+  private _ghosts;
+  public ghosts;
   private _coinsOnBoard: number;
   private _score: number = 0;
   constructor(
@@ -42,6 +45,15 @@ class Model {
         this._pacman.setSelectedDir(selectedDir),
       findSecondPacmanPos: () =>
         this._pacman.findSecondPacmanPos(this._portalData),
+    };
+    this._ghosts = new Ghosts(
+      this._wallData,
+      this._portalData,
+      this._pacman.getPosition(),
+    );
+    this.ghosts = {
+      getPos: () => this._ghosts.getGhostsPos(),
+      move: () => this._ghosts.moveGhosts(this._wallData, this._portalData, this._pacman.getPosition())
     };
   }
 
