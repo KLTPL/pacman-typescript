@@ -52,6 +52,7 @@ export default class Pacman {
   }
 
   public move(wallData: boolean[][], portalData: PortalData) {
+    console.log(JSON.stringify(this._pos));
     if (this._isSelectedDirEnabled) {
       // change this._dir to this._selected direction if possible
       if (this._dir.isOppositeTo(this._selectedDir)) {
@@ -73,13 +74,17 @@ export default class Pacman {
 
     for (let i = 0; i < portalData.length; i++) {
       const { start, end } = portalData[i];
+      const distObj = this._pos.calcDistanceInLineToPos(
+        new Pos(start.x + 0.5, start.y + 0.5),
+        false,
+      );
 
       if (
-        this._pos.isInCenter() &&
-        start.isEqualTo(this._pos.calcFieldPos()[0]) // if in center calcFieldPos returns one el list
+        distObj !== null &&
+        (Math.abs(distObj.dist + 0.5) < 0.0001 || Math.abs(distObj.dist) < 0.5)
       ) {
-        this._pos.x = end.x + 0.5 + this._dir.x;
-        this._pos.y = end.y + 0.5 + this._dir.y;
+        this._pos.x = end.x + 0.5 + (1 - Math.abs(distObj.dist)) * this._dir.x;
+        this._pos.y = end.y + 0.5 + (1 - Math.abs(distObj.dist)) * this._dir.y;
         this._isSelectedDirEnabled = false;
         break;
       }

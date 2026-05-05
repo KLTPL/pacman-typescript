@@ -53,7 +53,12 @@ class Model {
     );
     this.ghosts = {
       getPos: () => this._ghosts.getGhostsPos(),
-      move: () => this._ghosts.moveGhosts(this._wallData, this._portalData, this._pacman.getPosition())
+      move: () =>
+        this._ghosts.moveGhosts(
+          this._wallData,
+          this._portalData,
+          this._pacman.getPosition(),
+        ),
     };
   }
 

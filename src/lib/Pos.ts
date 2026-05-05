@@ -14,11 +14,14 @@ export class Pos {
 
   public calcDistanceInLineToPos(
     pos: Pos,
+    isDistAbs: boolean = true,
   ): { dist: number; axis: "x" | "y" } | null {
     if (this.x === pos.x) {
-      return { dist: Math.abs(this.y - pos.y), axis: "y" };
+      const dist = this.y - pos.y;
+      return { dist: isDistAbs ? Math.abs(dist) : dist, axis: "y" };
     } else if (this.y === pos.y) {
-      return { dist: Math.abs(this.x - pos.x), axis: "x" };
+      const dist = this.x - pos.x;
+      return { dist: isDistAbs ? Math.abs(dist) : dist, axis: "x" };
     }
     return null;
   }
