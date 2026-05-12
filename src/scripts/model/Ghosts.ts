@@ -2,8 +2,11 @@ import { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
 import Ghost from "./Ghost";
 import type { PortalData } from "./Model";
+import Model from "./Model";
 
-type visitedObj = null | { from: Pos; dirToPortal?: Dir };
+type visitedPathObj = { from: Pos; dirToPortal?: Dir };
+
+type visitedDistObj = { dist: number; dirToPortal?: Dir };
 
 class Ghosts {
   _ghosts: Ghost[];
@@ -29,7 +32,9 @@ class Ghosts {
     wallData: boolean[][],
     portalData: PortalData,
   ) {
-    const visited = this.createVisitedObj(
+    pacmanPos = this.generateEndPosInDist(pacmanPos, 5, wallData, portalData);
+
+    const visited = this.createVisitedPathObj(
       ghostPos,
       pacmanPos,
       wallData,
@@ -79,7 +84,79 @@ class Ghosts {
     return path;
   }
 
-  createVisitedObj(
+  generateEndPosInDist(
+    pacmanPos: Pos,
+    dist: number,
+    wallData: boolean[][],
+    portalData: PortalData,
+  ) {
+    const visited = this.createVisitedDistObj(
+      pacmanPos,
+      dist,
+      wallData,
+      portalData,
+    );
+
+    const endPosCandidates: Pos[] = [];
+    for (let r = 0; r < visited.length; r++) {
+      for (let c = 0; c < visited[r].length; c++) {
+        if (visited[r][c] !== null) {
+          endPosCandidates.push(new Pos(c, r));
+        }
+      }
+    }
+
+    return endPosCandidates[
+      Math.floor(Math.random() * endPosCandidates.length)
+    ];
+  }
+
+  createVisitedDistObj(
+    pacmanPos: Pos,
+    dist: number,
+    wallData: boolean[][],
+    portalData: PortalData,
+  ) {
+    const queue = [];
+    const visited: (null | visitedDistObj)[][] = wallData.map((row) =>
+      row.map(() => null),
+    );
+    visited[pacmanPos.y][pacmanPos.x] = {
+      dist: 0,
+    };
+
+    queue.push(new Pos(pacmanPos.x, pacmanPos.y));
+
+    while (queue.length > 0) {
+      const curr = queue.shift();
+      if (curr === undefined) {
+        throw new Error("Queue is empty when it shoud not");
+      }
+
+      const neighbours = this.createNewNeighboursList(
+        curr,
+        wallData,
+        portalData,
+        visited,
+      );
+      for (const neighbour of neighbours) {
+        const lastDist = visited[curr.y][curr.x]?.dist;
+        if (lastDist === undefined) {
+          throw new Error("Last step was not marked as visited");
+        }
+        visited[neighbour.pos.y][neighbour.pos.x] = {
+          dist: lastDist + 1,
+          dirToPortal: neighbour.dirToPortalStart,
+        };
+
+        if (lastDist + 1 < dist) {
+          queue.push(neighbour.pos);
+        }
+      }
+    }
+    return visited;
+  }
+  createVisitedPathObj(
     ghostPos: Pos,
     pacmanPos: Pos,
     wallData: boolean[][],
@@ -87,7 +164,7 @@ class Ghosts {
   ) {
     const queue = [];
 
-    const visited: (null | visitedObj)[][] = wallData.map((row) =>
+    const visited: (null | visitedPathObj)[][] = wallData.map((row) =>
       row.map(() => null),
     );
 
@@ -128,17 +205,18 @@ class Ghosts {
     pos: Pos,
     wallData: boolean[][],
     portalData: PortalData,
-    visited: (null | visitedObj)[][],
+    visited: (null | visitedPathObj)[][] | (null | visitedDistObj)[][],
   ) {
-    const isOutOfBounds = (el: Pos) =>
-      wallData[el.y] === undefined || wallData[el.y][el.x] === undefined;
-
     const neighbours: { pos: Pos; dirToPortalStart?: Dir }[] = [
       { pos: new Pos(pos.x + 1, pos.y) },
       { pos: new Pos(pos.x - 1, pos.y) },
       { pos: new Pos(pos.x, pos.y + 1) },
       { pos: new Pos(pos.x, pos.y - 1) },
-    ].filter((el) => isOutOfBounds(el.pos) || !wallData[el.pos.y][el.pos.x]);
+    ].filter(
+      (el) =>
+        Model.isPosOutOfBounds(el.pos, wallData) ||
+        !wallData[el.pos.y][el.pos.x],
+    );
 
     for (const neighbour of neighbours) {
       for (let i = 0; i < portalData.length; i++) {
@@ -156,7 +234,9 @@ class Ghosts {
       }
     }
     return neighbours.filter(
-      (el) => !isOutOfBounds(el.pos) && visited[el.pos.y][el.pos.x] === null,
+      (el) =>
+        !Model.isPosOutOfBounds(el.pos, wallData) &&
+        visited[el.pos.y][el.pos.x] === null,
     );
   }
 

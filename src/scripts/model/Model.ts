@@ -138,6 +138,12 @@ class Model {
   public getScore() {
     return this._score;
   }
+
+  public static isPosOutOfBounds(pos: Pos, wallData: boolean[][]) {
+    return (
+      wallData[pos.y] === undefined || wallData[pos.y][pos.x] === undefined
+    );
+  }
 }
 
 export default Model;
