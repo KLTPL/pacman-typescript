@@ -11,7 +11,6 @@ type visitedDistObj = { dist: number; dirToPortal?: Dir };
 class Ghosts {
   _ghosts: Ghost[];
   constructor(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
-    console.log(pacmanPos);
     this._ghosts = [];
     const positions = [new Pos(13.5, 11.5)];
     for (const pos of positions) {
@@ -40,22 +39,12 @@ class Ghosts {
       wallData,
       portalData,
     );
-    console.log("PACMAN AFTER: ", JSON.stringify(pacmanPos));
     const path: Pos[] = [];
 
     const curr = new Pos(pacmanPos.x, pacmanPos.y);
 
     path.push(new Pos(pacmanPos.x, pacmanPos.y));
-    console.log("GHOST POS:", JSON.stringify(ghostPos));
 
-    console.log(
-      JSON.stringify(
-        visited.map((row, i) => [
-          `${i}:`,
-          ...row.map((el) => (el === null ? null : JSON.stringify(el))),
-        ]),
-      ),
-    );
     while (!curr.isEqualTo(ghostPos)) {
       const next = visited[curr.y][curr.x];
       if (next === null) {
@@ -74,8 +63,6 @@ class Ghosts {
       }
 
       path.push(new Pos(curr.x, curr.y));
-
-      console.log("ADD TO PATH", JSON.stringify(curr));
     }
 
     path.push(new Pos(ghostPos.x, ghostPos.y));
@@ -254,8 +241,6 @@ class Ghosts {
         wallData,
         portalData,
       );
-      console.log("NEW PATH:");
-      console.log(JSON.stringify(path));
 
       return path;
     };

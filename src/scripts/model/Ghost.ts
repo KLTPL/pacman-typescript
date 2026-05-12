@@ -11,7 +11,6 @@ class Ghost {
     this._pos = initPos;
     this._currPath = [...initPath];
 
-    console.log(JSON.stringify(this._currPath));
     this._currDir = this.calcNewDirection();
   }
 
@@ -22,7 +21,6 @@ class Ghost {
     if (destination === undefined) {
       throw new Error("Path list is empty");
     }
-    console.log("calc ne w direction: ", this._pos, destination);
     const x = destination.x - Math.floor(this._pos.x);
     const y = destination.y - Math.floor(this._pos.y);
 
@@ -35,7 +33,6 @@ class Ghost {
 
   move(updatePath: (ghostPos: Pos) => Pos[], portalData: PortalData) {
     this._pos = Pos.addDirToPos(this._pos, this._currDir, GHOST_SPEED);
-    console.log("NEW GHOST POS:", this._pos);
 
     if (this._pos.isInCenter()) {
       if (this._currPath.length === 1) {

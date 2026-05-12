@@ -52,7 +52,6 @@ export default class Pacman {
   }
 
   public move(wallData: boolean[][], portalData: PortalData) {
-    console.log(JSON.stringify(this._pos));
     if (this._isSelectedDirEnabled) {
       // change this._dir to this._selected direction if possible
       if (this._dir.isOppositeTo(this._selectedDir)) {
