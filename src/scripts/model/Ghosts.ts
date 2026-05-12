@@ -95,9 +95,7 @@ class Ghosts {
       from: new Pos(-1, -1),
     };
     queue.push(ghostPos);
-    let n = 1;
     while (queue.length > 0) {
-      n++;
       const curr = queue.shift();
       if (curr === undefined) {
         throw new Error("Queue is empty when it shoud not");
