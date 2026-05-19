@@ -1,7 +1,7 @@
+import type { InputPortalPos } from "../../config/gameConfig";
 import type { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
 import type { Prettify } from "../../lib/Prettify";
-import type { InputPortalPos } from "../controller/Controller";
 import Ghosts from "./Ghosts";
 import Pacman from "./Pacman";
 
