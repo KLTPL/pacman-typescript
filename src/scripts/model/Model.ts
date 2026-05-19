@@ -26,6 +26,7 @@ class Model {
     inputCoinData: number[][],
     superCoinsPos: Pos[],
     pacmanPos: Pos,
+    ghostSpawnerPos: Pos,
     inputPortalPos: InputPortalPos,
   ) {
     this._portalData = inputPortalPos;
@@ -47,6 +48,7 @@ class Model {
         this._pacman.findSecondPacmanPos(this._portalData),
     };
     this._ghosts = new Ghosts(
+      ghostSpawnerPos,
       this._wallData,
       this._portalData,
       this._pacman.getPosition(),

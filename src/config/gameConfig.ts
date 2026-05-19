@@ -11,7 +11,7 @@ export type InitGameConfig = {
   coinData: number[][];
   superCoinsPos: Pos[];
   pacmanPos: Pos;
-  ghostsPos: Pos;
+  ghostsSpawnerPos: Pos;
   portalPos: InputPortalPos;
   gameLoopTimeMs: number;
   ghostsDifficultyStages: {
@@ -113,7 +113,7 @@ export default function getInitGameConfig(): InitGameConfig {
       // temp(new Pos(12, 23), new Pos(16, 23)),
     ],
     pacmanPos: new Pos(14, 23.5),
-    ghostsPos: new Pos(13.5, 11.5),
+    ghostsSpawnerPos: new Pos(13.5, 11.5),
     gameLoopTimeMs: 20,
     ghostsDifficultyStages: [
       { distFromPacmanForPath: 30, timeS: 15 },

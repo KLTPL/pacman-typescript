@@ -22,6 +22,7 @@ class Controller {
       initGameConfig.coinData,
       initGameConfig.superCoinsPos,
       initGameConfig.pacmanPos,
+      initGameConfig.ghostsSpawnerPos,
       initGameConfig.portalPos,
     );
 

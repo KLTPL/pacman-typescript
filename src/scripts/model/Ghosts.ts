@@ -10,9 +10,14 @@ type visitedDistObj = { dist: number; dirToPortal?: Dir };
 
 class Ghosts {
   _ghosts: Ghost[];
-  constructor(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
+  constructor(
+    ghostsSpawnerPos: Pos,
+    wallData: boolean[][],
+    portalData: PortalData,
+    pacmanPos: Pos,
+  ) {
     this._ghosts = [];
-    const positions = [new Pos(13.5, 11.5)];
+    const positions = [new Pos(ghostsSpawnerPos.x, ghostsSpawnerPos.y)];
     for (const pos of positions) {
       const path = this.generatePathToPacman(
         new Pos(Math.floor(pos.x), Math.floor(pos.y)),
