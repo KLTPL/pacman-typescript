@@ -15,7 +15,7 @@ export type InitGameConfig = {
   portalPos: InputPortalPos;
   gameLoopTimeMs: number;
   ghostsDifficultyStages: {
-    distFromPacmanForPath: number;
+    maxDistFromPacmanForPath: number;
     timeS: number | null;
   }[];
 };
@@ -116,12 +116,12 @@ export default function getInitGameConfig(): InitGameConfig {
     ghostsSpawnerPos: new Pos(13.5, 11.5),
     gameLoopTimeMs: 20,
     ghostsDifficultyStages: [
-      { distFromPacmanForPath: 30, timeS: 15 },
+      { maxDistFromPacmanForPath: 30, timeS: 15 },
 
-      { distFromPacmanForPath: 20, timeS: 15 },
-      { distFromPacmanForPath: 10, timeS: 15 },
-      { distFromPacmanForPath: 5, timeS: 15 },
-      { distFromPacmanForPath: 3, timeS: null },
+      { maxDistFromPacmanForPath: 20, timeS: 15 },
+      { maxDistFromPacmanForPath: 10, timeS: 15 },
+      { maxDistFromPacmanForPath: 5, timeS: 15 },
+      { maxDistFromPacmanForPath: 3, timeS: null },
     ],
   };
 }

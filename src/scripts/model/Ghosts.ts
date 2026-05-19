@@ -10,6 +10,7 @@ type visitedDistObj = { dist: number; dirToPortal?: Dir };
 
 class Ghosts {
   _ghosts: Ghost[];
+  _maxDistFromPacmanForPath: number;
   constructor(
     ghostsSpawnerPos: Pos,
     wallData: boolean[][],
