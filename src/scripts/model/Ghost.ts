@@ -1,7 +1,7 @@
 import { GHOST_SPEED } from "../../lib/constants";
 import { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
-import type { PortalData } from "./Model";
+import type { PortalData } from "../../types/modelTypes";
 
 class Ghost {
   private _pos: Pos;
@@ -49,8 +49,7 @@ class Ghost {
 
         if (
           distObj !== null &&
-          (Math.abs(distObj.dist + 0.5) < 0.0001 ||
-            Math.abs(distObj.dist) < 0.5)
+          (Math.abs(distObj.dist + 0.5) < 0.0001 || Math.abs(distObj.dist) < 0.5)
         ) {
           this.setPos(
             new Pos(

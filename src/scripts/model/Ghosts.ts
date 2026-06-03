@@ -1,9 +1,9 @@
 import type { GhostsStagesList } from "../../config/gameConfig";
 import { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
+import type { PortalData } from "../../types/modelTypes";
 import Ghost from "./Ghost";
 import GhostsStages from "./GhostsStages";
-import type { PortalData } from "./Model";
 import Model from "./Model";
 
 type visitedPathObj = { from: Pos; dirToPortal?: Dir };

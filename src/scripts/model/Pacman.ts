@@ -1,7 +1,7 @@
 import { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
-import type { PortalData } from "./Model";
 import { PACMAN_SPEED } from "../../lib/constants";
+import type { PortalData } from "../../types/modelTypes";
 
 export default class Pacman {
   private _pos: Pos;
@@ -12,15 +12,10 @@ export default class Pacman {
     this._pos = pos;
   }
 
-  private isWallInFront(
-    wallData: boolean[][],
-    portalData: PortalData,
-    dir: Dir = this._dir,
-  ) {
+  private isWallInFront(wallData: boolean[][], portalData: PortalData, dir: Dir = this._dir) {
     const isInCenter = this._pos.isInCenter();
 
-    const isPerpendicular =
-      !this._dir.isOppositeTo(dir) && !this._dir.isEqualTo(dir);
+    const isPerpendicular = !this._dir.isOppositeTo(dir) && !this._dir.isEqualTo(dir);
 
     if (!isInCenter) {
       return isPerpendicular;
@@ -40,10 +35,7 @@ export default class Pacman {
     }
 
     // check if out of bounds
-    if (
-      wallData[wallPos.y] === undefined ||
-      wallData[wallPos.y][wallPos.x] === undefined
-    ) {
+    if (wallData[wallPos.y] === undefined || wallData[wallPos.y][wallPos.x] === undefined) {
       return true;
     }
     const isWall = wallData[wallPos.y][wallPos.x];
@@ -95,24 +87,15 @@ export default class Pacman {
     for (let i = 0; i < portalData.length; i++) {
       const { start, end } = portalData[i];
 
-      const distObj = new Pos(
-        start.x + 0.5,
-        start.y + 0.5,
-      ).calcDistanceInLineToPos(this._pos);
+      const distObj = new Pos(start.x + 0.5, start.y + 0.5).calcDistanceInLineToPos(this._pos);
 
       if (distObj !== null && distObj.dist !== 0 && distObj.dist < 1) {
         if (distObj.axis === "x") {
           const dir = start.x + 0.5 - this._pos.x > 0 ? 1 : -1;
-          secondPacmanPos = new Pos(
-            end.x + (1 - distObj.dist) * dir + 0.5,
-            end.y + 0.5,
-          );
+          secondPacmanPos = new Pos(end.x + (1 - distObj.dist) * dir + 0.5, end.y + 0.5);
         } else {
           const dir = start.y + 0.5 - this._pos.y > 0 ? 1 : -1;
-          secondPacmanPos = new Pos(
-            end.x + 0.5,
-            end.y + (1 - distObj.dist) * dir + 0.5,
-          );
+          secondPacmanPos = new Pos(end.x + 0.5, end.y + (1 - distObj.dist) * dir + 0.5);
         }
         break;
       }

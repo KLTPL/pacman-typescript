@@ -1,5 +1,4 @@
-import type { Pos } from "../../lib/Pos";
-import type { CoinValue } from "../model/Model";
+import type { ModelState } from "../../types/modelTypes";
 import Board from "./Board";
 
 export const COLORS = {
@@ -39,40 +38,26 @@ class View {
     this._topBarSize = topBarSize;
     this._bottomBarSize = bottomBarSize;
     this._board = new Board(
-      args =>
+      (args) =>
         this.drawRect({
           ...args,
           y: args.y + this._topBarSize,
         }),
-      args => this.drawCircle({ ...args, y: args.y + this._topBarSize }),
+      (args) => this.drawCircle({ ...args, y: args.y + this._topBarSize }),
       () =>
         this._ctx.clearRect(
           0,
           this._topBarSize * this._fieldSizePx,
           this._widthPx,
-          this._heightPx -
-            (this._bottomBarSize + this._topBarSize) * this._fieldSizePx,
+          this._heightPx - (this._bottomBarSize + this._topBarSize) * this._fieldSizePx,
         ),
     );
   }
 
-  public draw(
-    wallData: boolean[][],
-    coinData: CoinValue[][],
-    pacmanPos: Pos,
-    secondPacmanPos: Pos | null,
-    ghosts: Pos[],
-    score: number,
-  ) {
+  public draw({ coinData, ghosts, pacmanPos, score, secondPacmanPos, wallData }: ModelState) {
     this._ctx.clearRect(0, 0, this._widthPx, this._heightPx);
     this.drawScore(score);
-    this._board.drawBoard(
-      wallData,
-      coinData,
-      pacmanPos,
-      ghosts,
-      secondPacmanPos,
-    );
+    this._board.drawBoard(wallData, coinData, pacmanPos, ghosts, secondPacmanPos);
   }
 
   private drawScore(score: number) {

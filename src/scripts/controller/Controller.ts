@@ -39,21 +39,12 @@ class Controller {
     this._timeAccumulatorMs += deltaTime;
 
     while (this._timeAccumulatorMs >= this._gameConfig.gameLoopTimeMs) {
-      this._model.pacman.move();
-      this._model.ghosts.move(this._gameConfig.gameLoopTimeMs);
-      this._model.pacman.collectCoin();
+      this._model.update(this._gameConfig.gameLoopTimeMs);
 
       this._timeAccumulatorMs -= this._gameConfig.gameLoopTimeMs;
     }
 
-    this._view.draw(
-      this._model.getWallData(),
-      this._model.getCoinData(),
-      this._model.pacman.getPos(),
-      this._model.pacman.findSecondPacmanPos(),
-      this._model.ghosts.getPos(),
-      this._model.getScore(),
-    );
+    this._view.draw(this._model.getState());
 
     requestAnimationFrame(this.gameLoop);
   };
@@ -63,13 +54,13 @@ class Controller {
       const key = ev.key.toLocaleLowerCase();
 
       if (key === "w" || key === "arrowup") {
-        this._model.pacman.setSelectedDir(new Dir(0, -1));
+        this._model.setPacmanSelectedDir(new Dir(0, -1));
       } else if (key === "s" || key === "arrowdown") {
-        this._model.pacman.setSelectedDir(new Dir(0, 1));
+        this._model.setPacmanSelectedDir(new Dir(0, 1));
       } else if (key === "a" || key === "arrowleft") {
-        this._model.pacman.setSelectedDir(new Dir(-1, 0));
+        this._model.setPacmanSelectedDir(new Dir(-1, 0));
       } else if (key === "d" || key === "arrowright") {
-        this._model.pacman.setSelectedDir(new Dir(1, 0));
+        this._model.setPacmanSelectedDir(new Dir(1, 0));
       }
     });
   }

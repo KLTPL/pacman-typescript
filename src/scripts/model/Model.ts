@@ -1,24 +1,18 @@
 import type { GhostsStagesList, InputPortalPos } from "../../config/gameConfig";
 import type { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
-import type { Prettify } from "../../lib/Prettify";
+import type { CoinValue, ModelState, PortalData } from "../../types/modelTypes";
 import Ghosts from "./Ghosts";
 import Pacman from "./Pacman";
 
-export type CoinValue = "NO_COIN" | "COIN" | "SUPER_COIN";
-
 const COIN_VALUE = 10;
-
-export type PortalData = Prettify<InputPortalPos>;
 
 class Model {
   private _wallData: boolean[][]; // true - there is a wall, false - there is no wall
   private _coinData: CoinValue[][];
   private _portalData: PortalData;
   private _pacman;
-  public pacman;
   private _ghosts;
-  public ghosts;
   private _coinsOnBoard: number;
   private _score: number = 0;
   constructor(
@@ -36,13 +30,7 @@ class Model {
     this._coinData = coinData;
     this._coinsOnBoard = coinAmount;
     this._pacman = new Pacman(pacmanPos);
-    this.pacman = {
-      collectCoin: () => this.pacmanCollectCoin(),
-      move: () => this._pacman.move(this._wallData, this._portalData),
-      getPos: () => this._pacman.getPosition(),
-      setSelectedDir: (selectedDir: Dir) => this._pacman.setSelectedDir(selectedDir),
-      findSecondPacmanPos: () => this._pacman.findSecondPacmanPos(this._portalData),
-    };
+
     this._ghosts = new Ghosts(
       ghostSpawnerPos,
       ghostsDifficultyStages,
@@ -50,20 +38,33 @@ class Model {
       this._portalData,
       this._pacman.getPosition(),
     );
-    this.ghosts = {
-      getPos: () => this._ghosts.getGhostsPos(),
-      move: (deltaTimeMs: number) =>
-        this._ghosts.moveGhosts(
-          this._wallData,
-          this._portalData,
-          this._pacman.getPosition(),
-          deltaTimeMs,
-        ),
+  }
+
+  update(gameLoopTimeMs: number) {
+    this._pacman.move(this._wallData, this._portalData);
+    this._ghosts.moveGhosts(
+      this._wallData,
+      this._portalData,
+      this._pacman.getPosition(),
+      gameLoopTimeMs,
+    );
+
+    this.pacmanCollectCoin();
+  }
+
+  getState(): ModelState {
+    return {
+      wallData: this._wallData,
+      coinData: this._coinData,
+      pacmanPos: this._pacman.getPosition(),
+      secondPacmanPos: this._pacman.findSecondPacmanPos(this._portalData),
+      ghosts: this._ghosts.getGhostsPos(),
+      score: this._score,
     };
   }
 
   private pacmanCollectCoin() {
-    const pacmanPos = this.pacman.getPos();
+    const pacmanPos = this._pacman.getPosition();
 
     const temp = pacmanPos.calcFieldPos();
     if (temp.length === 2) {
@@ -133,6 +134,10 @@ class Model {
 
   public getScore() {
     return this._score;
+  }
+
+  public setPacmanSelectedDir(selectedDir: Dir) {
+    this._pacman.setSelectedDir(selectedDir);
   }
 
   public static isPosOutOfBounds(pos: Pos, wallData: boolean[][]) {

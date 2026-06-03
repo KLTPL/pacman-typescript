@@ -4,4 +4,4 @@ import "./style.css";
 
 const gameConfig = getInitGameConfig();
 
-const gameController = new Controller(gameConfig);
+new Controller(gameConfig);

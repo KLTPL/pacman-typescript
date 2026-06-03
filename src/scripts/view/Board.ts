@@ -1,5 +1,5 @@
 import { Pos } from "../../lib/Pos";
-import type { CoinValue } from "../model/Model";
+import type { CoinValue } from "../../types/modelTypes";
 import { COLORS, type DrawCircleArgs, type DrawRectArgs } from "./View";
 
 const RADII = {
@@ -14,11 +14,7 @@ class Board {
   private _drawRect: DrawRectFun;
   private _drawCircle: DrawCirlceFun;
   private _clear: () => void;
-  constructor(
-    drawRect: DrawRectFun,
-    drawCircle: DrawCirlceFun,
-    clear: () => void,
-  ) {
+  constructor(drawRect: DrawRectFun, drawCircle: DrawCirlceFun, clear: () => void) {
     this._drawRect = drawRect;
     this._drawCircle = drawCircle;
     this._clear = clear;
