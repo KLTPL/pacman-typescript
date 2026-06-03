@@ -11,7 +11,7 @@ type visitedPathObj = { from: Pos; dirToPortal?: Dir };
 type visitedDistObj = { dist: number; dirToPortal?: Dir };
 
 class Ghosts {
-  _ghosts: Ghost[];
+  private _ghosts: Ghost[];
   private _stages: GhostsStages;
   constructor(
     ghostsSpawnerPos: Pos,
