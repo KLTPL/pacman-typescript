@@ -1,21 +1,18 @@
 import type { InitGameConfig } from "../../config/gameConfig";
 import { BOTTOM_BAR_SIZE, TOP_BAR_SIZE } from "../../config/gameDisplayConfig";
 import { Dir } from "../../lib/Dir";
-import wait from "../../lib/wait";
 import Model from "../model/Model";
 import View from "../view/View";
 
 class Controller {
   private _model: Model;
   private _view: View;
-  private _gameConfig: Pick<
-    InitGameConfig,
-    "gameLoopTimeMs" | "ghostsDifficultyStages"
-  >;
+  private _gameConfig: Pick<InitGameConfig, "gameLoopTimeMs">;
+  private _lastTimeMs = 0;
+  private _timeAccumulatorMs = 0;
   constructor(initGameConfig: InitGameConfig) {
     this._gameConfig = {
       gameLoopTimeMs: initGameConfig.gameLoopTimeMs,
-      ghostsDifficultyStages: initGameConfig.ghostsDifficultyStages,
     };
     this._model = new Model(
       initGameConfig.wallData,
@@ -23,34 +20,43 @@ class Controller {
       initGameConfig.superCoinsPos,
       initGameConfig.pacmanPos,
       initGameConfig.ghostsSpawnerPos,
+      initGameConfig.ghostsDifficultyStages,
       initGameConfig.portalPos,
     );
 
-    this._view = new View(
-      initGameConfig.rowsAmount,
-      TOP_BAR_SIZE,
-      BOTTOM_BAR_SIZE,
-    );
-    this.gameLoop();
+    this._view = new View(initGameConfig.rowsAmount, TOP_BAR_SIZE, BOTTOM_BAR_SIZE);
     this.initEventListeners();
+    requestAnimationFrame(this.gameLoop);
   }
 
-  async gameLoop() {
-    while (true) {
-      this._model.pacman.move();
-      this._model.ghosts.move();
-      this._model.pacman.collectCoin();
-      this._view.draw(
-        this._model.getWallData(),
-        this._model.getCoinData(),
-        this._model.pacman.getPos(),
-        this._model.pacman.findSecondPacmanPos(),
-        this._model.ghosts.getPos(),
-        this._model.getScore(),
-      );
-      await wait(this._gameConfig.gameLoopTimeMs);
+  gameLoop = (timestampMs: number) => {
+    if (this._lastTimeMs === 0) {
+      this._lastTimeMs = timestampMs;
     }
-  }
+
+    const deltaTime = timestampMs - this._lastTimeMs;
+    this._lastTimeMs = timestampMs;
+    this._timeAccumulatorMs += deltaTime;
+
+    while (this._timeAccumulatorMs >= this._gameConfig.gameLoopTimeMs) {
+      this._model.pacman.move();
+      this._model.ghosts.move(this._gameConfig.gameLoopTimeMs);
+      this._model.pacman.collectCoin();
+
+      this._timeAccumulatorMs -= this._gameConfig.gameLoopTimeMs;
+    }
+
+    this._view.draw(
+      this._model.getWallData(),
+      this._model.getCoinData(),
+      this._model.pacman.getPos(),
+      this._model.pacman.findSecondPacmanPos(),
+      this._model.ghosts.getPos(),
+      this._model.getScore(),
+    );
+
+    requestAnimationFrame(this.gameLoop);
+  };
 
   private initEventListeners() {
     document.addEventListener("keydown", (ev) => {

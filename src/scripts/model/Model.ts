@@ -1,4 +1,4 @@
-import type { InputPortalPos } from "../../config/gameConfig";
+import type { GhostsStagesList, InputPortalPos } from "../../config/gameConfig";
 import type { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
 import type { Prettify } from "../../lib/Prettify";
@@ -27,14 +27,12 @@ class Model {
     superCoinsPos: Pos[],
     pacmanPos: Pos,
     ghostSpawnerPos: Pos,
+    ghostsDifficultyStages: GhostsStagesList,
     inputPortalPos: InputPortalPos,
   ) {
     this._portalData = inputPortalPos;
     this._wallData = this.convertInputWallData(inputWallData);
-    const { coinAmount, coinData } = this.convertInputCoinData(
-      inputCoinData,
-      superCoinsPos,
-    );
+    const { coinAmount, coinData } = this.convertInputCoinData(inputCoinData, superCoinsPos);
     this._coinData = coinData;
     this._coinsOnBoard = coinAmount;
     this._pacman = new Pacman(pacmanPos);
@@ -42,24 +40,24 @@ class Model {
       collectCoin: () => this.pacmanCollectCoin(),
       move: () => this._pacman.move(this._wallData, this._portalData),
       getPos: () => this._pacman.getPosition(),
-      setSelectedDir: (selectedDir: Dir) =>
-        this._pacman.setSelectedDir(selectedDir),
-      findSecondPacmanPos: () =>
-        this._pacman.findSecondPacmanPos(this._portalData),
+      setSelectedDir: (selectedDir: Dir) => this._pacman.setSelectedDir(selectedDir),
+      findSecondPacmanPos: () => this._pacman.findSecondPacmanPos(this._portalData),
     };
     this._ghosts = new Ghosts(
       ghostSpawnerPos,
+      ghostsDifficultyStages,
       this._wallData,
       this._portalData,
       this._pacman.getPosition(),
     );
     this.ghosts = {
       getPos: () => this._ghosts.getGhostsPos(),
-      move: () =>
+      move: (deltaTimeMs: number) =>
         this._ghosts.moveGhosts(
           this._wallData,
           this._portalData,
           this._pacman.getPosition(),
+          deltaTimeMs,
         ),
     };
   }
@@ -74,8 +72,7 @@ class Model {
     } // so now temp.length === 1
     const { x, y } = temp[0];
     if (this._coinData[y][x] !== "NO_COIN") {
-      this._score +=
-        this._coinData[y][x] === "COIN" ? COIN_VALUE : COIN_VALUE * 5;
+      this._score += this._coinData[y][x] === "COIN" ? COIN_VALUE : COIN_VALUE * 5;
       this._coinsOnBoard -= 1;
       this._coinData[y][x] = "NO_COIN";
     }
@@ -97,10 +94,7 @@ class Model {
     return wallData;
   }
 
-  private convertInputCoinData(
-    inputCoinData: number[][],
-    superCoinsPos: Pos[],
-  ) {
+  private convertInputCoinData(inputCoinData: number[][], superCoinsPos: Pos[]) {
     const coinData: CoinValue[][] = [];
     let coinAmount = 0;
 
@@ -142,9 +136,7 @@ class Model {
   }
 
   public static isPosOutOfBounds(pos: Pos, wallData: boolean[][]) {
-    return (
-      wallData[pos.y] === undefined || wallData[pos.y][pos.x] === undefined
-    );
+    return wallData[pos.y] === undefined || wallData[pos.y][pos.x] === undefined;
   }
 }
 

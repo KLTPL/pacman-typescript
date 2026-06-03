@@ -1,6 +1,8 @@
+import type { GhostsStagesList } from "../../config/gameConfig";
 import { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
 import Ghost from "./Ghost";
+import GhostsStages from "./GhostsStages";
 import type { PortalData } from "./Model";
 import Model from "./Model";
 
@@ -10,13 +12,15 @@ type visitedDistObj = { dist: number; dirToPortal?: Dir };
 
 class Ghosts {
   _ghosts: Ghost[];
-  _maxDistFromPacmanForPath: number;
+  private _stages: GhostsStages;
   constructor(
     ghostsSpawnerPos: Pos,
+    ghostsStagesList: GhostsStagesList,
     wallData: boolean[][],
     portalData: PortalData,
     pacmanPos: Pos,
   ) {
+    this._stages = new GhostsStages(ghostsStagesList);
     this._ghosts = [];
     const positions = [new Pos(ghostsSpawnerPos.x, ghostsSpawnerPos.y)];
     for (const pos of positions) {
@@ -37,14 +41,14 @@ class Ghosts {
     wallData: boolean[][],
     portalData: PortalData,
   ) {
-    pacmanPos = this.generateEndPosInDist(pacmanPos, 5, wallData, portalData);
-
-    const visited = this.createVisitedPathObj(
-      ghostPos,
+    pacmanPos = this.generateEndPosInDist(
       pacmanPos,
+      this._stages.getCurrentMaxDistFromPacmanForPath(),
       wallData,
       portalData,
     );
+
+    const visited = this.createVisitedPathObj(ghostPos, pacmanPos, wallData, portalData);
     const path: Pos[] = [];
 
     const curr = new Pos(pacmanPos.x, pacmanPos.y);
@@ -83,12 +87,7 @@ class Ghosts {
     wallData: boolean[][],
     portalData: PortalData,
   ) {
-    const visited = this.createVisitedDistObj(
-      pacmanPos,
-      dist,
-      wallData,
-      portalData,
-    );
+    const visited = this.createVisitedDistObj(pacmanPos, dist, wallData, portalData);
 
     const endPosCandidates: Pos[] = [];
     for (let r = 0; r < visited.length; r++) {
@@ -99,9 +98,7 @@ class Ghosts {
       }
     }
 
-    return endPosCandidates[
-      Math.floor(Math.random() * endPosCandidates.length)
-    ];
+    return endPosCandidates[Math.floor(Math.random() * endPosCandidates.length)];
   }
 
   createVisitedDistObj(
@@ -111,9 +108,7 @@ class Ghosts {
     portalData: PortalData,
   ) {
     const queue = [];
-    const visited: (null | visitedDistObj)[][] = wallData.map((row) =>
-      row.map(() => null),
-    );
+    const visited: (null | visitedDistObj)[][] = wallData.map((row) => row.map(() => null));
     visited[pacmanPos.y][pacmanPos.x] = {
       dist: 0,
     };
@@ -126,12 +121,7 @@ class Ghosts {
         throw new Error("Queue is empty when it shoud not");
       }
 
-      const neighbours = this.createNewNeighboursList(
-        curr,
-        wallData,
-        portalData,
-        visited,
-      );
+      const neighbours = this.createNewNeighboursList(curr, wallData, portalData, visited);
       for (const neighbour of neighbours) {
         const lastDist = visited[curr.y][curr.x]?.dist;
         if (lastDist === undefined) {
@@ -157,9 +147,7 @@ class Ghosts {
   ) {
     const queue = [];
 
-    const visited: (null | visitedPathObj)[][] = wallData.map((row) =>
-      row.map(() => null),
-    );
+    const visited: (null | visitedPathObj)[][] = wallData.map((row) => row.map(() => null));
 
     visited[ghostPos.y][ghostPos.x] = {
       from: new Pos(-1, -1),
@@ -171,12 +159,7 @@ class Ghosts {
         throw new Error("Queue is empty when it shoud not");
       }
 
-      const neighbours = this.createNewNeighboursList(
-        curr,
-        wallData,
-        portalData,
-        visited,
-      );
+      const neighbours = this.createNewNeighboursList(curr, wallData, portalData, visited);
       for (const neighbour of neighbours) {
         visited[neighbour.pos.y][neighbour.pos.x] = {
           from: new Pos(curr.x, curr.y),
@@ -205,11 +188,7 @@ class Ghosts {
       { pos: new Pos(pos.x - 1, pos.y) },
       { pos: new Pos(pos.x, pos.y + 1) },
       { pos: new Pos(pos.x, pos.y - 1) },
-    ].filter(
-      (el) =>
-        Model.isPosOutOfBounds(el.pos, wallData) ||
-        !wallData[el.pos.y][el.pos.x],
-    );
+    ].filter((el) => Model.isPosOutOfBounds(el.pos, wallData) || !wallData[el.pos.y][el.pos.x]);
 
     for (const neighbour of neighbours) {
       for (let i = 0; i < portalData.length; i++) {
@@ -227,9 +206,7 @@ class Ghosts {
       }
     }
     return neighbours.filter(
-      (el) =>
-        !Model.isPosOutOfBounds(el.pos, wallData) &&
-        visited[el.pos.y][el.pos.x] === null,
+      (el) => !Model.isPosOutOfBounds(el.pos, wallData) && visited[el.pos.y][el.pos.x] === null,
     );
   }
 
@@ -237,7 +214,9 @@ class Ghosts {
     wallData: boolean[][],
     portalData: PortalData,
     pacmanPos: Pos,
+    deltaTimeMs: number,
   ) {
+    this._stages.update(deltaTimeMs);
     const createNewPath = (ghostPos: Pos) => {
       const path = this.generatePathToPacman(
         new Pos(Math.floor(ghostPos.x), Math.floor(ghostPos.y)),

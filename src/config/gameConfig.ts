@@ -5,6 +5,11 @@ export type InputPortalPos = {
   end: Pos;
 }[];
 
+export type GhostsStagesList = {
+  maxDistFromPacmanForPath: number;
+  timeS: number | null;
+}[];
+
 export type InitGameConfig = {
   rowsAmount: number;
   wallData: number[][];
@@ -14,10 +19,7 @@ export type InitGameConfig = {
   ghostsSpawnerPos: Pos;
   portalPos: InputPortalPos;
   gameLoopTimeMs: number;
-  ghostsDifficultyStages: {
-    maxDistFromPacmanForPath: number;
-    timeS: number | null;
-  }[];
+  ghostsDifficultyStages: GhostsStagesList;
 };
 
 export default function getInitGameConfig(): InitGameConfig {
@@ -94,12 +96,7 @@ export default function getInitGameConfig(): InitGameConfig {
       [1, -26, 1],
       [28],
     ],
-    superCoinsPos: [
-      new Pos(1, 2),
-      new Pos(26, 2),
-      new Pos(1, 27),
-      new Pos(26, 27),
-    ],
+    superCoinsPos: [new Pos(1, 2), new Pos(26, 2), new Pos(1, 27), new Pos(26, 27)],
 
     portalPos: [
       createPortalPosObj(new Pos(-1, 8), new Pos(28, 8)),
@@ -116,11 +113,10 @@ export default function getInitGameConfig(): InitGameConfig {
     ghostsSpawnerPos: new Pos(13.5, 11.5),
     gameLoopTimeMs: 20,
     ghostsDifficultyStages: [
-      { maxDistFromPacmanForPath: 30, timeS: 15 },
-
-      { maxDistFromPacmanForPath: 20, timeS: 15 },
-      { maxDistFromPacmanForPath: 10, timeS: 15 },
-      { maxDistFromPacmanForPath: 5, timeS: 15 },
+      { maxDistFromPacmanForPath: 30, timeS: 10 },
+      { maxDistFromPacmanForPath: 20, timeS: 10 },
+      { maxDistFromPacmanForPath: 10, timeS: 10 },
+      { maxDistFromPacmanForPath: 5, timeS: 5 },
       { maxDistFromPacmanForPath: 3, timeS: null },
     ],
   };
