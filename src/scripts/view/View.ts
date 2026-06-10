@@ -54,9 +54,18 @@ class View {
     );
   }
 
-  public draw({ coinData, ghosts, pacmanPos, score, secondPacmanPos, wallData }: ModelState) {
+  public draw({
+    coinData,
+    ghosts,
+    pacmanPos,
+    score,
+    secondPacmanPos,
+    wallData,
+    lives,
+  }: ModelState) {
     this._ctx.clearRect(0, 0, this._widthPx, this._heightPx);
     this.drawScore(score);
+    this.drawLives(lives);
     this._board.drawBoard(wallData, coinData, pacmanPos, ghosts, secondPacmanPos);
   }
 
@@ -69,6 +78,18 @@ class View {
       score.toString(),
       this._widthPx / 2,
       (this._topBarSize * this._fieldSizePx) / 2,
+    );
+  }
+
+  private drawLives(lives: number) {
+    this._ctx.fillStyle = "white";
+    this._ctx.font = "100px Arial";
+    this._ctx.textAlign = "center";
+    this._ctx.textBaseline = "middle";
+    this._ctx.fillText(
+      lives.toString(),
+      this._widthPx / 2,
+      this._heightPx - (this._bottomBarSize * this._fieldSizePx) / 2,
     );
   }
 

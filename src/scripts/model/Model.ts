@@ -67,6 +67,7 @@ class Model {
       secondPacmanPos: this._pacman.findSecondPacmanPos(this._portalData),
       ghosts: this._ghosts.getGhostsPos(),
       score: this._score,
+      lives: this._lives,
     };
   }
 

@@ -11,6 +11,7 @@ export type ModelState = {
   secondPacmanPos: Pos | null;
   ghosts: Pos[];
   score: number;
+  lives: number;
 };
 
 export type PortalData = Prettify<InputPortalPos>;
