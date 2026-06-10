@@ -6,15 +6,15 @@ import type { PortalData } from "../../types/modelTypes";
 class Ghost {
   private _pos: Pos;
   private _currPath: Pos[] = [];
-  private _currDir: Dir;
+  private _currDir: Dir = new Dir(0, 0);
   constructor(initPos: Pos, initPath: Pos[]) {
     this._pos = initPos;
     this._currPath = [...initPath];
 
-    this._currDir = this.calcNewDirection();
+    this.updateDirectionFromPath();
   }
 
-  calcNewDirection() {
+  updateDirectionFromPath() {
     this._currPath.shift();
     const destination = this._currPath[0];
 
@@ -28,7 +28,7 @@ class Ghost {
       throw new Error("At least one argument does not match Dir arg type");
     }
 
-    return new Dir(x, y);
+    this._currDir = new Dir(x, y);
   }
 
   move(updatePath: (ghostPos: Pos) => Pos[], portalData: PortalData) {
@@ -39,7 +39,7 @@ class Ghost {
         this.setPath(updatePath(this._pos));
       }
 
-      this._currDir = this.calcNewDirection();
+      this.updateDirectionFromPath();
     } else {
       for (const { start, end } of portalData) {
         const distObj = this._pos.calcDistanceInLineToPos(
@@ -63,6 +63,12 @@ class Ghost {
         }
       }
     }
+  }
+
+  reset(spawnerPos: Pos, updatePath: (ghostPos: Pos) => Pos[]) {
+    this.setPos(spawnerPos);
+    this.setPath(updatePath(this.getPos()));
+    this.updateDirectionFromPath();
   }
 
   getPos() {

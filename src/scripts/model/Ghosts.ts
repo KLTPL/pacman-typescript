@@ -13,6 +13,7 @@ type visitedDistObj = { dist: number; dirToPortal?: Dir };
 class Ghosts {
   private _ghosts: Ghost[];
   private _stages: GhostsStages;
+  private _ghostsSpawnerPos: Pos;
   constructor(
     ghostsSpawnerPos: Pos,
     ghostsStagesList: GhostsStagesList,
@@ -20,19 +21,28 @@ class Ghosts {
     portalData: PortalData,
     pacmanPos: Pos,
   ) {
+    this._ghostsSpawnerPos = ghostsSpawnerPos;
     this._stages = new GhostsStages(ghostsStagesList);
     this._ghosts = [];
     const positions = [new Pos(ghostsSpawnerPos.x, ghostsSpawnerPos.y)];
     for (const pos of positions) {
-      const path = this.generatePathToPacman(
-        new Pos(Math.floor(pos.x), Math.floor(pos.y)),
-        new Pos(Math.floor(pacmanPos.x), Math.floor(pacmanPos.y)),
-
-        wallData,
-        portalData,
-      );
+      const path = this.createNewPathForGhost(pos, pacmanPos, wallData, portalData);
       this._ghosts.push(new Ghost(pos, path));
     }
+  }
+
+  public createNewPathForGhost(
+    ghostPos: Pos,
+    pacmanPos: Pos,
+    wallData: boolean[][],
+    portalData: PortalData,
+  ) {
+    return this.generatePathToPacman(
+      new Pos(Math.floor(ghostPos.x), Math.floor(ghostPos.y)),
+      new Pos(Math.floor(pacmanPos.x), Math.floor(pacmanPos.y)),
+      wallData,
+      portalData,
+    );
   }
 
   private generatePathToPacman(
@@ -217,20 +227,19 @@ class Ghosts {
     deltaTimeMs: number,
   ) {
     this._stages.update(deltaTimeMs);
-    const createNewPath = (ghostPos: Pos) => {
-      const path = this.generatePathToPacman(
-        new Pos(Math.floor(ghostPos.x), Math.floor(ghostPos.y)),
-
-        new Pos(Math.floor(pacmanPos.x), Math.floor(pacmanPos.y)),
-
-        wallData,
+    for (const ghost of this._ghosts) {
+      ghost.move(
+        (ghostPos: Pos) => this.createNewPathForGhost(ghostPos, pacmanPos, wallData, portalData),
         portalData,
       );
+    }
+  }
 
-      return path;
-    };
+  reset(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
     for (const ghost of this._ghosts) {
-      ghost.move(createNewPath, portalData);
+      ghost.reset(this._ghostsSpawnerPos, (ghostPos: Pos) =>
+        this.createNewPathForGhost(ghostPos, pacmanPos, wallData, portalData),
+      );
     }
   }
 

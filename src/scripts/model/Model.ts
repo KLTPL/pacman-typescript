@@ -15,6 +15,7 @@ class Model {
   private _ghosts;
   private _coinsOnBoard: number;
   private _score: number = 0;
+  private _lives: number = 3;
   constructor(
     inputWallData: number[][],
     inputCoinData: number[][],
@@ -48,6 +49,7 @@ class Model {
       this._pacman.getPosition(),
       gameLoopTimeMs,
     );
+    this.checkCollisions();
 
     this.pacmanCollectCoin();
   }
@@ -61,6 +63,19 @@ class Model {
       ghosts: this._ghosts.getGhostsPos(),
       score: this._score,
     };
+  }
+
+  private checkCollisions() {
+    const pacmanPos = this._pacman.getPosition();
+
+    for (const ghostPos of this._ghosts.getGhostsPos()) {
+      const distObj = pacmanPos.calcDistanceInLineToPos(ghostPos);
+      if (distObj !== null && distObj.dist < 1) {
+        this._pacman.reset();
+        this._ghosts.reset(this._wallData, this._portalData, pacmanPos);
+        this._lives--;
+      }
+    }
   }
 
   private pacmanCollectCoin() {

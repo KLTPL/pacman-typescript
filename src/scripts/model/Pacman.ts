@@ -5,11 +5,15 @@ import type { PortalData } from "../../types/modelTypes";
 
 export default class Pacman {
   private _pos: Pos;
-  private _dir = new Dir(1, 0);
+  private _initPos: Pos;
+  private _initDirection = new Dir(1, 0);
+
+  private _dir = new Dir(this._initDirection.x, this._initDirection.y);
   private _selectedDir = new Dir(1, 0);
   private _isSelectedDirEnabled = true; // swithced to false for one move after teleporting
   constructor(pos: Pos) {
     this._pos = pos;
+    this._initPos = pos;
   }
 
   private isWallInFront(wallData: boolean[][], portalData: PortalData, dir: Dir = this._dir) {
@@ -101,6 +105,12 @@ export default class Pacman {
       }
     }
     return secondPacmanPos;
+  }
+
+  public reset() {
+    this._pos = new Pos(this._initPos.x, this._initPos.y);
+    this._dir = new Dir(this._initDirection.x, this._initDirection.y);
+    this._selectedDir = new Dir(this._initDirection.x, this._initDirection.y);
   }
 
   public setSelectedDir(selectedDir: Dir) {
