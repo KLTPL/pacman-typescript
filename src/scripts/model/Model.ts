@@ -6,6 +6,7 @@ import Ghosts from "./Ghosts";
 import Pacman from "./Pacman";
 
 const COIN_VALUE = 10;
+const LIVES_AMOUNT = 3;
 
 class Model {
   private _wallData: boolean[][]; // true - there is a wall, false - there is no wall
@@ -15,7 +16,11 @@ class Model {
   private _ghosts;
   private _coinsOnBoard: number;
   private _score: number = 0;
-  private _lives: number = 3;
+  private _lives: number = LIVES_AMOUNT;
+  private initCoinObj: {
+    coinData: CoinValue[][];
+    coinAmount: number;
+  };
   constructor(
     inputWallData: number[][],
     inputCoinData: number[][],
@@ -27,9 +32,9 @@ class Model {
   ) {
     this._portalData = inputPortalPos;
     this._wallData = this.convertInputWallData(inputWallData);
-    const { coinAmount, coinData } = this.convertInputCoinData(inputCoinData, superCoinsPos);
-    this._coinData = coinData;
-    this._coinsOnBoard = coinAmount;
+    this.initCoinObj = this.convertInputCoinData(inputCoinData, superCoinsPos);
+    this._coinData = this.initCoinObj.coinData.map((el) => [...el]);
+    this._coinsOnBoard = this.initCoinObj.coinAmount;
     this._pacman = new Pacman(pacmanPos);
 
     this._ghosts = new Ghosts(
@@ -72,8 +77,17 @@ class Model {
       const distObj = pacmanPos.calcDistanceInLineToPos(ghostPos);
       if (distObj !== null && distObj.dist < 1) {
         this._pacman.reset();
-        this._ghosts.reset(this._wallData, this._portalData, pacmanPos);
         this._lives--;
+
+        if (this._lives > 0) {
+          this._ghosts.resetPos(this._wallData, this._portalData, pacmanPos);
+        } else {
+          this._ghosts.resetPosAndStage(this._wallData, this._portalData, pacmanPos);
+          this._lives = LIVES_AMOUNT;
+          this._coinData = this.initCoinObj.coinData.map((el) => [...el]);
+          this._coinsOnBoard = this.initCoinObj.coinAmount;
+          this._score = 0;
+        }
       }
     }
   }

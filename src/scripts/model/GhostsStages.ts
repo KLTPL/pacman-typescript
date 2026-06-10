@@ -2,11 +2,15 @@ import type { GhostsStagesList } from "../../config/gameConfig";
 import Timer from "../../lib/Timer";
 
 export default class GhostsStages {
-  private _timer: Timer;
+  private _timer: Timer = new Timer(0);
   private _stages: GhostsStagesList;
   private _currentStageIdx = 0;
   constructor(stages: GhostsStagesList) {
     this._stages = stages;
+    this.createTimer();
+  }
+
+  private createTimer() {
     if (this._stages[this._currentStageIdx].timeS === null) {
       throw new Error("");
     }
@@ -21,6 +25,11 @@ export default class GhostsStages {
       const currStageTimeS = this._stages[this._currentStageIdx].timeS;
       this._timer.reset(currStageTimeS === null ? 0 : currStageTimeS * 1000);
     }
+  }
+
+  reset() {
+    this._currentStageIdx = 0;
+    this.createTimer();
   }
 
   getCurrentMaxDistFromPacmanForPath() {

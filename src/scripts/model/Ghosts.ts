@@ -235,7 +235,12 @@ class Ghosts {
     }
   }
 
-  reset(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
+  resetPosAndStage(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
+    this._stages.reset();
+    this.resetPos(wallData, portalData, pacmanPos);
+  }
+
+  resetPos(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
     for (const ghost of this._ghosts) {
       ghost.reset(this._ghostsSpawnerPos, (ghostPos: Pos) =>
         this.createNewPathForGhost(ghostPos, pacmanPos, wallData, portalData),
