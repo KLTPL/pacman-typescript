@@ -20,6 +20,7 @@ export type InitGameConfig = {
   portalPos: InputPortalPos;
   gameLoopTimeMs: number;
   ghostsDifficultyStages: GhostsStagesList;
+  blueGhostModeTimeMs: number;
 };
 
 export default function getInitGameConfig(): InitGameConfig {
@@ -119,5 +120,6 @@ export default function getInitGameConfig(): InitGameConfig {
       { maxDistFromPacmanForPath: 5, timeS: 5 },
       { maxDistFromPacmanForPath: 3, timeS: null },
     ],
+    blueGhostModeTimeMs: 7000,
   };
 }

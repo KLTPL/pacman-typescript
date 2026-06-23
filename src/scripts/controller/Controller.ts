@@ -22,6 +22,7 @@ class Controller {
       initGameConfig.ghostsSpawnerPos,
       initGameConfig.ghostsDifficultyStages,
       initGameConfig.portalPos,
+      initGameConfig.blueGhostModeTimeMs,
     );
 
     this._view = new View(initGameConfig.rowsAmount, TOP_BAR_SIZE, BOTTOM_BAR_SIZE);

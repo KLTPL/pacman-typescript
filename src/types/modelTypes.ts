@@ -13,6 +13,7 @@ export type ModelState = {
   score: number;
   highScore: number;
   lives: number;
+  isBlueGhostMode: boolean;
 };
 
 export type PortalData = Prettify<InputPortalPos>;

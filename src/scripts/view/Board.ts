@@ -26,11 +26,12 @@ class Board {
     pacmanPos: Pos,
     ghosts: Pos[],
     secondPacmanPos: Pos | null,
+    isBlueGhostMode: boolean,
   ) {
     this._clear();
     this.drawWalls(wallData);
     this.drawPacman(pacmanPos, secondPacmanPos);
-    this.drawGhosts(ghosts);
+    this.drawGhosts(ghosts, isBlueGhostMode);
     this.drawCoins(coinData);
   }
 
@@ -84,14 +85,14 @@ class Board {
     }
   }
 
-  private drawGhosts(ghosts: Pos[]) {
+  private drawGhosts(ghosts: Pos[], isBlueGhostMode: boolean) {
     const colors = ["purple", "red", "orange", "#2bfbf1"];
     for (let i = 0; i < ghosts.length; i++) {
       this._drawCircle({
         x: ghosts[i].x,
         y: ghosts[i].y,
         radius: 0.5,
-        color: colors[i],
+        color: isBlueGhostMode ? "blue" : colors[i],
       });
     }
   }

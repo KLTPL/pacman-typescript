@@ -1,6 +1,7 @@
 import type { GhostsStagesList, InputPortalPos } from "../../config/gameConfig";
 import type { Dir } from "../../lib/Dir";
 import { Pos } from "../../lib/Pos";
+import Timer from "../../lib/Timer";
 import type { CoinValue, ModelState, PortalData } from "../../types/modelTypes";
 import Ghosts from "./Ghosts";
 import Pacman from "./Pacman";
@@ -19,6 +20,8 @@ class Model {
   private _score: number = 0;
   private _highScore: number = this.readHighScoreFromLocalStorage();
   private _lives: number = LIVES_AMOUNT;
+  private _blueGhostModeTimer: Timer | null = null;
+  private _blueGhostModeTimeMs = 0;
   private initCoinObj: {
     coinData: CoinValue[][];
     coinAmount: number;
@@ -31,6 +34,7 @@ class Model {
     ghostSpawnerPos: Pos,
     ghostsDifficultyStages: GhostsStagesList,
     inputPortalPos: InputPortalPos,
+    blueGhostModeTimeMs: number,
   ) {
     this._portalData = inputPortalPos;
     this._wallData = this.convertInputWallData(inputWallData);
@@ -38,6 +42,7 @@ class Model {
     this._coinData = this.initCoinObj.coinData.map((el) => [...el]);
     this._coinsOnBoard = this.initCoinObj.coinAmount;
     this._pacman = new Pacman(pacmanPos);
+    this._blueGhostModeTimeMs = blueGhostModeTimeMs;
 
     this._ghosts = new Ghosts(
       ghostSpawnerPos,
@@ -56,9 +61,15 @@ class Model {
       this._pacman.getPosition(),
       gameLoopTimeMs,
     );
-    this.checkCollisions();
 
     this.pacmanCollectCoin();
+
+    this.checkCollisions();
+
+    this._blueGhostModeTimer?.update(gameLoopTimeMs);
+    if (this._blueGhostModeTimer?.isOver()) {
+      this._blueGhostModeTimer = null;
+    }
   }
 
   getState(): ModelState {
@@ -71,6 +82,7 @@ class Model {
       score: this._score,
       highScore: this._highScore,
       lives: this._lives,
+      isBlueGhostMode: this._blueGhostModeTimer !== null,
     };
   }
 
@@ -110,9 +122,14 @@ class Model {
     } // so now temp.length === 1
     const { x, y } = temp[0];
     if (this._coinData[y][x] !== "NO_COIN") {
-      this._score += this._coinData[y][x] === "COIN" ? COIN_VALUE : COIN_VALUE * 5;
+      const isSuperCoin = this._coinData[y][x] === "SUPER_COIN";
+      this._score += isSuperCoin ? COIN_VALUE * 5 : COIN_VALUE;
       this._coinsOnBoard -= 1;
       this._coinData[y][x] = "NO_COIN";
+
+      if (isSuperCoin) {
+        this._blueGhostModeTimer = new Timer(this._blueGhostModeTimeMs);
+      }
     }
   }
 

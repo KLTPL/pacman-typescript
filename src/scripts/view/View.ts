@@ -63,11 +63,12 @@ class View {
     secondPacmanPos,
     wallData,
     lives,
+    isBlueGhostMode,
   }: ModelState) {
     this._ctx.clearRect(0, 0, this._widthPx, this._heightPx);
     this.drawScore(score, highScore);
     this.drawLives(lives);
-    this._board.drawBoard(wallData, coinData, pacmanPos, ghosts, secondPacmanPos);
+    this._board.drawBoard(wallData, coinData, pacmanPos, ghosts, secondPacmanPos, isBlueGhostMode);
   }
 
   private drawScore(score: number, highScore: number) {
