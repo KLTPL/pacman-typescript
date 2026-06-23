@@ -88,17 +88,22 @@ class Model {
 
   private checkCollisions() {
     const pacmanPos = this._pacman.getPosition();
-
-    for (const ghostPos of this._ghosts.getGhostsPos()) {
-      const distObj = pacmanPos.calcDistanceInLineToPos(ghostPos);
+    const ghostsPos = this._ghosts.getGhostsPos();
+    for (let i = 0; i < ghostsPos.length; i++) {
+      const distObj = pacmanPos.calcDistanceInLineToPos(ghostsPos[i]);
       if (distObj !== null && distObj.dist < 1) {
+        if (this.isBlueGhostMode()) {
+          this._ghosts.resetOneGhostPos(i, this._wallData, this._portalData, pacmanPos);
+          this._score += 200;
+          continue;
+        }
         this._pacman.reset();
         this._lives--;
 
         if (this._lives > 0) {
-          this._ghosts.resetPos(this._wallData, this._portalData, pacmanPos);
+          this._ghosts.resetGhostsPos(this._wallData, this._portalData, pacmanPos);
         } else {
-          this._ghosts.resetPosAndStage(this._wallData, this._portalData, pacmanPos);
+          this._ghosts.resetGhostsPosAndStage(this._wallData, this._portalData, pacmanPos);
           this._lives = LIVES_AMOUNT;
           this._coinData = this.initCoinObj.coinData.map((el) => [...el]);
           this._coinsOnBoard = this.initCoinObj.coinAmount;

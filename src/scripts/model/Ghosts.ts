@@ -242,17 +242,28 @@ class Ghosts {
     }
   }
 
-  resetPosAndStage(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
+  resetGhostsPosAndStage(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
     this._stages.reset();
-    this.resetPos(wallData, portalData, pacmanPos);
+    this.resetGhostsPos(wallData, portalData, pacmanPos);
   }
 
-  resetPos(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
+  resetGhostsPos(wallData: boolean[][], portalData: PortalData, pacmanPos: Pos) {
     for (const ghost of this._ghosts) {
       ghost.reset(this._ghostsSpawnerPos, (ghostPos: Pos) =>
         this.createNewPathForGhost(ghostPos, pacmanPos, wallData, portalData),
       );
     }
+  }
+
+  resetOneGhostPos(
+    ghostIdx: number,
+    wallData: boolean[][],
+    portalData: PortalData,
+    pacmanPos: Pos,
+  ) {
+    this._ghosts[ghostIdx].reset(this._ghostsSpawnerPos, (ghostPos: Pos) =>
+      this.createNewPathForGhost(ghostPos, pacmanPos, wallData, portalData),
+    );
   }
 
   getGhostsPos() {
