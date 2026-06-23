@@ -18,13 +18,16 @@ export default class GhostsStages {
     this._timer = new Timer(currStageTimeS === null ? 0 : currStageTimeS * 1000);
   }
 
+  // return if in a new stage
   update(deltaTimeMs: number) {
     this._timer.update(deltaTimeMs);
     if (this._timer.isOver() && this._stages[this._currentStageIdx].timeS !== null) {
       this._currentStageIdx++;
       const currStageTimeS = this._stages[this._currentStageIdx].timeS;
       this._timer.reset(currStageTimeS === null ? 0 : currStageTimeS * 1000);
+      return true;
     }
+    return false;
   }
 
   reset() {

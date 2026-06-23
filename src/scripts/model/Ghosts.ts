@@ -6,6 +6,8 @@ import Ghost from "./Ghost";
 import GhostsStages from "./GhostsStages";
 import Model from "./Model";
 
+const MAX_GHOSTS_AMOUNT = 4;
+
 type visitedPathObj = { from: Pos; dirToPortal?: Dir };
 
 type visitedDistObj = { dist: number; dirToPortal?: Dir };
@@ -24,11 +26,13 @@ class Ghosts {
     this._ghostsSpawnerPos = ghostsSpawnerPos;
     this._stages = new GhostsStages(ghostsStagesList);
     this._ghosts = [];
-    const positions = [new Pos(ghostsSpawnerPos.x, ghostsSpawnerPos.y)];
-    for (const pos of positions) {
-      const path = this.createNewPathForGhost(pos, pacmanPos, wallData, portalData);
-      this._ghosts.push(new Ghost(pos, path));
-    }
+    this.createNewGhost(pacmanPos, wallData, portalData);
+  }
+
+  private createNewGhost(pacmanPos: Pos, wallData: boolean[][], portalData: PortalData) {
+    const pos = new Pos(this._ghostsSpawnerPos.x, this._ghostsSpawnerPos.y);
+    const path = this.createNewPathForGhost(pos, pacmanPos, wallData, portalData);
+    this._ghosts.push(new Ghost(pos, path));
   }
 
   public createNewPathForGhost(
@@ -226,7 +230,10 @@ class Ghosts {
     pacmanPos: Pos,
     deltaTimeMs: number,
   ) {
-    this._stages.update(deltaTimeMs);
+    const isNewStage = this._stages.update(deltaTimeMs);
+    if (this._ghosts.length < MAX_GHOSTS_AMOUNT && isNewStage) {
+      this.createNewGhost(pacmanPos, wallData, portalData);
+    }
     for (const ghost of this._ghosts) {
       ghost.move(
         (ghostPos: Pos) => this.createNewPathForGhost(ghostPos, pacmanPos, wallData, portalData),
