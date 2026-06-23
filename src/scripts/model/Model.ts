@@ -82,7 +82,7 @@ class Model {
       score: this._score,
       highScore: this._highScore,
       lives: this._lives,
-      isBlueGhostMode: this._blueGhostModeTimer !== null,
+      isBlueGhostMode: this.isBlueGhostMode(),
     };
   }
 
@@ -187,6 +187,10 @@ class Model {
     }
 
     return highScore;
+  }
+
+  private isBlueGhostMode() {
+    return this._blueGhostModeTimer !== null;
   }
 
   public getWallData() {
