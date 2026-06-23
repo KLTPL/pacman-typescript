@@ -85,12 +85,13 @@ class Board {
   }
 
   private drawGhosts(ghosts: Pos[]) {
-    for (const ghost of ghosts) {
+    const colors = ["purple", "red", "yellow", "#2bfbf1"];
+    for (let i = 0; i < ghosts.length; i++) {
       this._drawCircle({
-        x: ghost.x,
-        y: ghost.y,
+        x: ghosts[i].x,
+        y: ghosts[i].y,
         radius: 0.5,
-        color: "purple",
+        color: colors[i],
       });
     }
   }
