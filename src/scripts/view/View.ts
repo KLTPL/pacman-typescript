@@ -59,24 +59,31 @@ class View {
     ghosts,
     pacmanPos,
     score,
+    highScore,
     secondPacmanPos,
     wallData,
     lives,
   }: ModelState) {
     this._ctx.clearRect(0, 0, this._widthPx, this._heightPx);
-    this.drawScore(score);
+    this.drawScore(score, highScore);
     this.drawLives(lives);
     this._board.drawBoard(wallData, coinData, pacmanPos, ghosts, secondPacmanPos);
   }
 
-  private drawScore(score: number) {
+  private drawScore(score: number, highScore: number) {
     this._ctx.fillStyle = "white";
     this._ctx.font = "100px Arial";
     this._ctx.textAlign = "center";
     this._ctx.textBaseline = "middle";
     this._ctx.fillText(
-      score.toString(),
+      highScore.toString(),
       this._widthPx / 2,
+      (this._topBarSize * this._fieldSizePx) / 2,
+    );
+
+    this._ctx.fillText(
+      score.toString(),
+      this._widthPx / 10,
       (this._topBarSize * this._fieldSizePx) / 2,
     );
   }

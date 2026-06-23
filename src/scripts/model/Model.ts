@@ -7,6 +7,7 @@ import Pacman from "./Pacman";
 
 const COIN_VALUE = 10;
 const LIVES_AMOUNT = 3;
+const HIGH_SCORE_KEY = "HIGH_SCORE";
 
 class Model {
   private _wallData: boolean[][]; // true - there is a wall, false - there is no wall
@@ -16,6 +17,7 @@ class Model {
   private _ghosts;
   private _coinsOnBoard: number;
   private _score: number = 0;
+  private _highScore: number = this.readHighScoreFromLocalStorage();
   private _lives: number = LIVES_AMOUNT;
   private initCoinObj: {
     coinData: CoinValue[][];
@@ -67,6 +69,7 @@ class Model {
       secondPacmanPos: this._pacman.findSecondPacmanPos(this._portalData),
       ghosts: this._ghosts.getGhostsPos(),
       score: this._score,
+      highScore: this._highScore,
       lives: this._lives,
     };
   }
@@ -87,6 +90,10 @@ class Model {
           this._lives = LIVES_AMOUNT;
           this._coinData = this.initCoinObj.coinData.map((el) => [...el]);
           this._coinsOnBoard = this.initCoinObj.coinAmount;
+          if (this._score > this._highScore) {
+            this._highScore = this._score;
+            localStorage.setItem(HIGH_SCORE_KEY, this._highScore.toString());
+          }
           this._score = 0;
         }
       }
@@ -150,6 +157,21 @@ class Model {
     return { coinData, coinAmount };
   }
 
+  private readHighScoreFromLocalStorage(): number {
+    const highScoreStr = localStorage.getItem(HIGH_SCORE_KEY);
+
+    if (highScoreStr === null) {
+      return 0;
+    }
+    const highScore = Number(highScoreStr);
+
+    if (isNaN(highScore)) {
+      return 0;
+    }
+
+    return highScore;
+  }
+
   public getWallData() {
     return this._wallData;
   }
@@ -160,10 +182,6 @@ class Model {
 
   public getPortalData() {
     return this._portalData;
-  }
-
-  public getScore() {
-    return this._score;
   }
 
   public setPacmanSelectedDir(selectedDir: Dir) {
